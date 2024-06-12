@@ -32,12 +32,15 @@ export const CDLISReportForm = ({ callback }) => {
     }
 
     const handlePdf = async () => {
-        let url = `${getApiUrl()}/driverdocs/fetch?id=${driverRecord["recordid"]}&type=fcra`
-        let headers = { credentials: "include", method: "get", headers: { 'Content-Type': "application/pdf" } }
-        const response = await fetch(url, headers);
-        const blob = await response.blob();
-        const pdfUrl = URL.createObjectURL(blob);
-        setPdfCard({ open: true, data: pdfUrl })
+        const rec = driverRecord.documents.find(r => r.typecode === '41')
+        if (rec) {
+            let url = `${getApiUrl()}/driverdocs/fetch?id=${rec.recordid}`
+            let headers = { credentials: "include", method: "get", headers: { 'Content-Type': "application/pdf" } }
+            const response = await fetch(url, headers);
+            const blob = await response.blob();
+            const pdfUrl = URL.createObjectURL(blob);
+            setPdfCard({ open: true, data: pdfUrl })
+        }
     }
 
     const handleSubmit = async () => {
@@ -48,7 +51,7 @@ export const CDLISReportForm = ({ callback }) => {
         const res = await sendFormData("POST", data, "accounts")
         if (res.status === 200) {
             setDriverRecord(res.data)
-            callback({status:0})
+            callback({ status: 0 })
         }
     }
 

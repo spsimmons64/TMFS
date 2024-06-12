@@ -534,9 +534,9 @@ class Drivers(Resource):
                     mvr_text = "No MVR On File For This License"
                 else:
                     datediff = (today - format_raw_date(lic_rec["mvrdate"])).days
-                    if 0 < datediff < 30:                     
-                        mvr_status = 2
-                        mvr_text = f'MVR Report Completed {format_date_time(lic_rec["mvrdate"],"human_date")}'                    
+                    mvr_status = 1
+                    mvr_text = f'MVR Report Completed {format_date_time(lic_rec["mvrdate"],"human_date")}'                    
+                    if 0 < datediff < 30:mvr_status = 2                        
                     if datediff > 365:
                         mvr_status = 3
                         mvr_text = f'MVR Report Out Of Compliance'                                            
@@ -547,9 +547,9 @@ class Drivers(Resource):
                         mvr_rec = mvr_set[0]
                         mvr_status=1
                         mvr_text = f'MVR Report Completed {format_date_time(mvr_rec["returndate"],"human_date")}'                    
-                    if  mvr_rec[0]["status"] == "pending":                                        
-                        mvr_status=4
-                        mvr_text = "MVR Report Is Currently Pending"                                                     
+                        if  mvr_rec["status"] == "pending":                                        
+                            mvr_status=4
+                            mvr_text = "MVR Report Is Currently Pending"                                                     
                 rec["mvrreport"].append({
                     "licenseid": lic_rec["recordid"],                
                     "text": mvr_text,

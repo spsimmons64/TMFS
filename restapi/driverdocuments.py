@@ -7,12 +7,13 @@ from toolbox import *
 from queries import *
 from drivers import Drivers
 from emailqueue import EmailQueue
+
+from templates.pdf import outputpdf
 from templates.pdf import driverslicense
 from templates.pdf import medicalcard
 from templates.pdf import driverapplication
 from templates.pdf import document_39
-from templates.pdf import driverfcra
-from templates.pdf import outputpdf
+from templates.pdf import document_41
 from templates.pdf import document_22
 
 
@@ -132,7 +133,8 @@ class DriverDocuments(Resource):
     def fetch_document(self):                      
         file = ""
         doc_rec = Database().fetch("driverdocuments",self.payload["id"])        
-        typ_rec = Database().fetch("documenttypes",doc_rec["documenttypeid"])        
+        
+        typ_rec = Database().fetch("documenttypes",doc_rec["documenttypeid"])                
         if doc_rec and typ_rec:                        
             if doc_rec["uploaded"] == "Y":                
                 file = os.path.join(app.config["PROFILE_PATH"],doc_rec["driverid"],f'{doc_rec["recordid"]}.pdf')
@@ -140,7 +142,7 @@ class DriverDocuments(Resource):
                 if typ_rec["typecode"] == "11": file = driverapplication.generate_application_pdf(self.payload["id"])
                 if typ_rec["typecode"] == "22": file = document_22.generate_report(doc_rec["driverslicenseid"],doc_rec["recordid"])                
                 if typ_rec["typecode"] == "39": file = document_39.generate_report(doc_rec["recordid"])                    
-                if typ_rec["typecode"] == "fcra": file = driverfcra.generate_report(self.payload["id"])                                                        
+                if typ_rec["typecode"] == "41": file = document_41.generate_report(self.payload["id"])                                                        
             if file:                
                 @after_this_request
                 def delete_file(resp): 
