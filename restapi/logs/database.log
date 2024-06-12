@@ -1,0 +1,5 @@
+[2024-06-11 10:27:1718116028]
+[Error Number] 1054
+[Error Msg] Unknown column 'accountreviewdate' in 'where clause'
+[SQL] SELECT SQL_CALC_FOUND_ROWS a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s AND accountreviewdate is NULL AND a.deleted IS NULL
+------------------------------------------------------------------------------------------------------------------------
