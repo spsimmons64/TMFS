@@ -800,7 +800,7 @@ class Drivers(Resource):
             data.append(new_rec)            
         return build_response(status=200,data=data,count=rec_count)
 
-    def get (self,user):
+    def get (self,user):        
         if self.payload["action"]:
             match self.payload["action"]:
                 case "grid": return self.__get_driver_list(user)

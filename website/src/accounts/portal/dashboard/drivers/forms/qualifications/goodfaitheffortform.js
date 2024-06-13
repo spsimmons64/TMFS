@@ -120,7 +120,7 @@ export const GoodFaithEffortForm = ({ callback }) => {
     return (<>
         {currForm &&
             <ModalFormScroll width="800px" height="690px">
-                <ModalFormHeader title="Inquiry Into Driving Record Qualification" busy={formState.busy} />
+                <ModalFormHeader title="Good Faith Effort Driving Record Inquiry" busy={formState.busy} />
                 <ModalFormBodyScroll id="driver-inquiry" busy={formState.busy}>
                     <FormSection style={{ paddingTop: "0px", borderBottom: "none" }}>
                         This qualification requires the completed and signed Driving Record Inquiry form AND a Motor Vechicle Report (MVR)

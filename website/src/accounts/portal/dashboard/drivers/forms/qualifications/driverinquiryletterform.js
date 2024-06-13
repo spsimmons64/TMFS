@@ -79,7 +79,7 @@ export const DriverInquiryLetterForm = ({ licenseid, callback }) => {
                         </div>
                         <div style={{ width: "200px" }}>
                             <FormTopLabel>SSN</FormTopLabel>
-                            <FormInput value={`${driverRecord.socialsecurity}`} disabled  />
+                            <FormInput mask="ssn" value={`${driverRecord.socialsecurity}`} disabled  />
                         </div>
                     </FormFlexRowStyle>
                     <p style={{ fontWeight: 600 }}>To Whom in May Concern:</p><br />

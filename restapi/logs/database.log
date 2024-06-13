@@ -63,3 +63,23 @@
 [Error Msg] Unknown column 'accountreviewdate' in 'where clause'
 [SQL] SELECT SQL_CALC_FOUND_ROWS a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s AND accountreviewdate is NULL AND a.deleted IS NULL
 ------------------------------------------------------------------------------------------------------------------------
+[2024-06-12 15:29:1718220549]
+[Error Number] 1054
+[Error Msg] Unknown column 'accountreviewdate' in 'where clause'
+[SQL] SELECT SQL_CALC_FOUND_ROWS a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s AND accountreviewdate is NULL AND a.deleted IS NULL
+------------------------------------------------------------------------------------------------------------------------
+[2024-06-12 15:30:1718220646]
+[Error Number] 1054
+[Error Msg] Unknown column 'accountreviewdate' in 'where clause'
+[SQL] SELECT SQL_CALC_FOUND_ROWS a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s AND accountreviewdate is NULL AND a.deleted IS NULL
+------------------------------------------------------------------------------------------------------------------------
+[2024-06-12 15:31:1718220701]
+[Error Number] 1054
+[Error Msg] Unknown column 'accountreviewdate' in 'where clause'
+[SQL] SELECT SQL_CALC_FOUND_ROWS a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s AND accountreviewdate is NULL AND a.deleted IS NULL
+------------------------------------------------------------------------------------------------------------------------
+[2024-06-12 15:49:1718221754]
+[Error Number] 1054
+[Error Msg] Unknown column 'accountreviewdate' in 'where clause'
+[SQL] SELECT SQL_CALC_FOUND_ROWS a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s AND accountreviewdate is NULL AND a.deleted IS NULL
+------------------------------------------------------------------------------------------------------------------------

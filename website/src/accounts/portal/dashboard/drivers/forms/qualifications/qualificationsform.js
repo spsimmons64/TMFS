@@ -10,6 +10,7 @@ import { QualApplicationForm } from "./applicationform"
 import { getBubbleColor, getBubbleIcon } from "../../../../../../global/globals"
 import styled from "styled-components"
 import { DriverInquiryForm } from "./driverinquiry"
+import { GoodFaithEffortForm } from "./goodfaitheffortform"
 
 
 const QualContainer = styled.div`
@@ -128,12 +129,13 @@ export const QualificationsForm = () => {
                 </QualColumn2>
                 <QualColumn3>{getGoodFaithStatus()=== 0 ? "Incomplete" : "Complete For All Licenses"}</QualColumn3>
                 <QualColumn4>
-                    <FormButton style={{ width: "150px" }} onClick={() => setForm(1)}>View Details</FormButton>
+                    <FormButton style={{ width: "150px" }} onClick={() => setForm(2)}>View Details</FormButton>
                 </QualColumn4>
             </QualContainer>
 
         </div>
         {form == 0 && <QualApplicationForm callback={handleFormCallback}/>}
         {form == 1 && <DriverInquiryForm callback={handleFormCallback}/>}
+        {form == 2 && <GoodFaithEffortForm callback={handleFormCallback}/>}
     </>)
 }
