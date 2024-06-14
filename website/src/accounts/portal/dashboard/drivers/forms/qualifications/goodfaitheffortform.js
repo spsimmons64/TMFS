@@ -15,6 +15,8 @@ import styled from "styled-components"
 import { UploadFileForm } from "../../../../../../classes/uploadfileform"
 import { YesNo } from "../../../../../../components/portals/yesno"
 import { useMousePosition } from "../../../../../../global/hooks/usemousepos"
+import { GoodFaithDocForm } from "./goodfaithdocform"
+import { faMinus } from "@fortawesome/free-solid-svg-icons"
 
 const LicenseContainer = styled.div`
 width:100%;
@@ -34,10 +36,18 @@ background-color:#e6e6e6;
 padding: 6px;
 border-bottom: 1px dotted #B6B6B6;
 `
+const NotifyContainer = styled.div`
+width:100%;
+background-color: #e6ffe6;
+border: 1px dotted #00b300;
+border-radius:5px;
+padding: 5px;
+font-size: 14px;
+font-weight:600;
+`
 
 
 export const GoodFaithEffortForm = ({ callback }) => {
-    const mousePos = useMousePosition()
     const { globalState } = useGlobalContext()
     const { driverRecord, setDriverRecord } = useContext(DriverContext)
     const { sendFormData, getValue, setFormBusy, formState } = useFormHook("drivinginquiry-form")
@@ -51,7 +61,7 @@ export const GoodFaithEffortForm = ({ callback }) => {
     const handlePdf = async ({ target }) => {
         setFormBusy(true)
         const id = target.getAttribute("data-id")
-        let rec = driverRecord.documents.find(r => r.typecode === "22" && r.driverslicenseid == id)
+        let rec = driverRecord.documents.find(r => r.typecode === "20" && r.driverslicenseid == id)
         if (rec) {
             let url = `${getApiUrl()}/driverdocs/fetch?id=${rec.recordid}`
             let headers = { credentials: "include", method: "get", headers: { 'Content-Type': "application/pdf" } }
@@ -63,42 +73,12 @@ export const GoodFaithEffortForm = ({ callback }) => {
         setFormBusy(false)
     }
 
-    const handleYesNo = ({ target }) => {                
-        setYesNo({
-            message: "Are you sure you want to start a new driver inquiry?",
-            licenseid: target.getAttribute("data-id"),
-            left: mousePos.x,
-            top: mousePos.y,
-            callback: yesNoCallback
-        })        
-    }
-
-    const yesNoCallback = (resp,data={}) => {           
-        if(resp){            
-            setForm({form:"1",params:data.licenseid})
-        } else {
-            setForm({form:"",params:null})
-        }        
-        setYesNo({})    
-    }
-
-    const handleUploadRequest = (uploadtype, licenseid, licensenumber, licensestate) => {
-        let params = {}
-        if (uploadtype === "inq") {
-            params = {
-                description: `Inquiry Into Driving Record For License ${licensenumber} Uploaded By ${globalState.user.firstname} ${globalState.user.lastname}`,
-                additional: `Reference ${licensestate} License Number ${licensenumber}`,
-                typecode: "22",
-                licenseid: licenseid
-            }
-        }
-        if (uploadtype === "mvr") {
-            params = {
-                description: `Motor Vehicle Report (MVR) For License ${licensenumber} Uploaded By ${globalState.user.firstname} ${globalState.user.lastname}`,
-                additional: `Reference ${licensestate} License Number ${licensenumber}`,
-                typecode: "25",
-                licenseid: licenseid
-            }
+    const handleUploadRequest = (licenseid, licensenumber, licensestate) => {
+        const params = {
+            description: `Good Faith Effort - Inquiry Into Driving Record For License ${licensenumber} Uploaded By ${globalState.user.firstname} ${globalState.user.lastname}`,
+            additional: `Reference ${licensestate} License Number ${licensenumber}`,
+            typecode: "20",
+            licenseid: licenseid
         }
         setForm({ form: "3", params: params })
         setCurrForm(false)
@@ -106,7 +86,7 @@ export const GoodFaithEffortForm = ({ callback }) => {
 
     const handleSetForm = ({ target }) => {
         const formId = target.getAttribute("data-form")
-        if (formId == "1" || formId == "2") {            
+        if (formId == "1" || formId == "2") {
             setForm({ form: formId, params: target.getAttribute("data-id") })
         }
         setCurrForm(false)
@@ -123,8 +103,11 @@ export const GoodFaithEffortForm = ({ callback }) => {
                 <ModalFormHeader title="Good Faith Effort Driving Record Inquiry" busy={formState.busy} />
                 <ModalFormBodyScroll id="driver-inquiry" busy={formState.busy}>
                     <FormSection style={{ paddingTop: "0px", borderBottom: "none" }}>
-                        This qualification requires the completed and signed Driving Record Inquiry form AND a Motor Vechicle Report (MVR)
-                        be ran/uploaded for each license the driver has held in the last 3 years. We can handle both of these tasks for you.
+                        The Good Faith Effort Inquiry Into Driving Record is only required when you have attempted to
+                        obtain the driver's Motor Vehicle Report (MVR) and was unsuccessful for any reason. If you have
+                        not attempted to obtain the MVR for this driver, you must do so first. This program can provide
+                        the driver MVR by visiting the qualification page for the Inquiry Into Driving Record. If you
+                        have indeed attempted to obtain the MVR and was unsuccessful, please continue below.
                     </FormSection>
                     {driverRecord.license.map((r, rndx) => {
                         if (r.status == 1 && rndx > 0) return null
@@ -135,92 +118,63 @@ export const GoodFaithEffortForm = ({ callback }) => {
                                 </LicenseHeader>
                                 <LicenseBody>
                                     <div style={{ display: "flex", alignItems: "center" }}>
-                                        <div style={{ width: "60px" }}>
-                                            <CircleBack color={getBubbleColor(qualifications.drivinginquiry[rndx].status)} size="40px">
-                                                <FontAwesomeIcon icon={getBubbleIcon(qualifications.drivinginquiry[rndx].status)} />
-                                            </CircleBack>
-                                        </div>
+                                        {(qualifications.mvrreport[rndx].status === 0 || qualifications.mvrreport[rndx].status === 3)
+                                            ? <div style={{ width: "60px" }}>
+                                                <CircleBack color={getBubbleColor(qualifications.goodfaitheffort[rndx].status)} size="40px">
+                                                    <FontAwesomeIcon icon={getBubbleIcon(qualifications.goodfaitheffort[rndx].status)} />
+                                                </CircleBack>
+                                            </div>
+                                            : <div style={{ width: "60px" }}>
+                                                <CircleBack color="blue" size="40px">
+                                                    <FontAwesomeIcon icon={faMinus} />
+                                                </CircleBack>
+                                            </div>
+                                        }
                                         <div style={{ flex: 1 }}>
                                             <div>
-                                                <div><h3>Driving Record Inquiry Form</h3></div>
-                                                {qualifications.drivinginquiry[rndx].status == 1
-                                                    ? <div>{qualifications.drivinginquiry[rndx].text}</div>
-                                                    : <div>You must complete and sign the Driving Record Inquiry form pertaining
-                                                        to this license. Please select the appropriate option below.</div>
+                                                <div><h3>Good Faith Effort Document </h3></div>
+                                                {(qualifications.mvrreport[rndx].status === 0 || qualifications.mvrreport[rndx].status === 3)
+                                                    ? <>{qualifications.goodfaitheffort[rndx].status == 1
+                                                        ? <div>{qualifications.goodfaitheffort[rndx].text}</div>
+                                                        : <div>Complete the Good Faith Effort document if you were unable to complete the
+                                                            driving record inquiry for this license.</div>
+                                                    }
+                                                    </>
+                                                    : <NotifyContainer>
+                                                        The MVR For This License Is On File Or Currently Pending
+                                                    </NotifyContainer>
                                                 }
                                             </div>
                                         </div>
                                     </div>
-                                    <FormFlexRowStyle style={{ marginTop: "10px" }}>
-                                        <div style={{ width: "54px" }}></div>
-                                        {qualifications.drivinginquiry[rndx].status == 1
-                                            ? <>
-                                                <div><FormButton
-                                                    style={{ width: "202px" }} data-id={r.recordid} onClick={handlePdf} >View Driver Record Inquiry
-                                                </FormButton>
-                                                </div>
-                                                <div>
-                                                    <FormButton
-                                                        data-id = {r.recordid}
-                                                        onClick={handleYesNo}
-                                                        style={{ width: "202px" }}>Start New Inquiry
-                                                    </FormButton>
-                                                </div>
-                                            </>
-                                            : <>
-                                                <div>
+                                    {(qualifications.mvrreport[rndx].status === 0 || qualifications.mvrreport[rndx].status === 3) && <>
+                                        {qualifications.goodfaitheffort[rndx].status == 0
+                                            ? <FormFlexRowStyle style={{ marginTop: "10px", paddingLeft: "60px" }}>
+                                                <div style={{ width: "188px" }}>
                                                     <FormButton
                                                         data-form="1"
                                                         data-id={r.recordid}
                                                         onClick={handleSetForm}
-                                                        style={{ width: "202px" }}>Complete Form
+                                                        style={{ width: "188px" }}>Complete Form
                                                     </FormButton>
                                                 </div>
                                                 <div>
                                                     <FormButton
-                                                        style={{ width: "202px" }}
-                                                        onClick={() => handleUploadRequest("inq", r.recordid, r.licensenumber, r.state)}>Upload Completed Form
+                                                        style={{ width: "188px" }}
+                                                        onClick={() => handleUploadRequest(r.recordid, r.licensenumber, r.state)}>Upload Completed Form
                                                     </FormButton>
                                                 </div>
-                                            </>
-                                        }
-                                    </FormFlexRowStyle>
-                                </LicenseBody>
-                                {(qualifications.mvrreport[rndx].status == 0 && qualifications.drivinginquiry[rndx].status == 1) &&
-                                    <LicenseBody>
-                                        <div style={{ display: "flex", alignItems: "center" }}>
-                                            <div style={{ width: "60px" }}>
-                                                <CircleBack color={getBubbleColor(qualifications.mvrreport[rndx].status)} size="40px">
-                                                    <FontAwesomeIcon icon={getBubbleIcon(qualifications.mvrreport[rndx].status)} />
-                                                </CircleBack>
-                                            </div>
-                                            <div style={{ flex: 1 }}>
-                                                <div>
-                                                    <div><h3>Motor Vehicle Report</h3></div>
-                                                    <div>You must run a state Motor Vehicle Report (MVR) for the license. Please
-                                                        select the appropriate option below.</div>
-                                                </div>
-                                            </div>                                            
-                                        </div>
-                                        <div style={{fontSize:"12px",color:"#164398",padding:"10px 0px 10px 60px"}}>
-                                            Note: Please complete the Good Faith Effort document if unable to obtain the driving record.
-                                        </div>
-                                        <FormFlexRowStyle style={{ marginTop: "10px" }}>
-                                            <div style={{ width: "54px" }}></div>
-                                            <div><FormButton
-                                                data-form="2"
-                                                data-id={r.recordid}
-                                                onClick={handleSetForm}
-                                                style={{ width: "202px" }}>Run MVR</FormButton></div>
-                                            <div>
+                                            </FormFlexRowStyle>
+                                            : <div style={{ marginTop: "10px", paddingLeft: "60px" }}>
                                                 <FormButton
-                                                    onClick={() => handleUploadRequest("mvr", r.recordid, r.licensenumber, r.state)}
-                                                    style={{ width: "202px" }}>Upload MVR Report
+                                                    data-id={r.recordid}
+                                                    style={{ width: "188px" }}
+                                                    onClick={handlePdf}>View Document
                                                 </FormButton>
                                             </div>
-                                        </FormFlexRowStyle>
-                                    </LicenseBody>
-                                }
+                                        }
+                                    </>}
+                                </LicenseBody>
                             </LicenseContainer>
                         )
                     })}
@@ -230,17 +184,17 @@ export const GoodFaithEffortForm = ({ callback }) => {
                 </ModalFormFooter>
             </ModalFormScroll >
         }
-        {yesNo.message && <YesNo {...yesNo}/>}
-        {pdfCard.open && <PDFModalContainer
-            source={`${pdfCard.data}`}
-            title="Inquiry Into Driving Record"
-            height="800px"
-            width="1000px"
-            callback={() => setPdfCard({ open: false, data: "" })}
-        />
+        {yesNo.message && <YesNo {...yesNo} />}
+        {
+            pdfCard.open && <PDFModalContainer
+                source={`${pdfCard.data}`}
+                title="Good Faith Effort - Inquiry Into Driving Record"
+                height="800px"
+                width="1000px"
+                callback={() => setPdfCard({ open: false, data: "" })}
+            />
         }
-        {form.form == "1" && <DriverInquiryLetterForm licenseid={form.params} callback={formCallback} />}
-        {form.form == "2" && <MVRReportForm callback={formCallback} />}
+        {form.form == "1" && <GoodFaithDocForm licenseid={form.params} callback={formCallback} />}
         {form.form == "3" && <UploadFileForm callback={formCallback} params={form.params} />}
     </>)
 }

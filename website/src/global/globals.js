@@ -64,7 +64,7 @@ export const checkDate = (dateString) => {
 }
 
 export const getBubbleColor = (status) => {
-    let colorList = ["grey", "green", "gold", "red", "purple"]
+    let colorList = ["grey", "green", "gold", "red", "purple","blue"]
     return (colorList[status])
 }
 export const getBubbleIcon = (status) => {
