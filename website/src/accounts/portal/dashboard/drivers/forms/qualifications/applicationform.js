@@ -10,9 +10,11 @@ import { CircleBack, QualificationsContext } from "../../classes/qualifications"
 import { getApiUrl, getBubbleColor, getBubbleIcon } from "../../../../../../global/globals"
 import { FormInput } from "../../../../../../components/portals/inputstyles"
 import { PDFModalContainer } from "../../../../../../components/portals/pdfviewer"
+import { PDFContext } from "../../../../../../global/contexts/pdfcontext"
 
 
 export const QualApplicationForm = ({ callback }) => {
+    const { viewDocument } = useContext(PDFContext)
     const { driverRecord } = useContext(DriverContext)
     const [filefields, setFileFields] = useState("")
     const { qualifications } = useContext(QualificationsContext)
@@ -35,18 +37,10 @@ export const QualApplicationForm = ({ callback }) => {
             setFileFields(filename)
         }
     }
-    const handlePdf = async () => {
-        setFormBusy(true)
-        let rec = driverRecord.documents.find(r => r.typecode === "11")
-        if (rec) {
-            let url = `${getApiUrl()}/driverdocs/fetch?id=${rec["recordid"]}`
-            let headers = { credentials: "include", method: "get", headers: { 'Content-Type': "application/pdf" } }
-            const response = await fetch(url, headers);
-            const blob = await response.blob();
-            const pdfUrl = URL.createObjectURL(blob);
-            setPdfCard({ open: true, data: `${pdfUrl}#view=Fit` })
-        }
-        setFormBusy(false)
+
+    const handlePdf = async () => {        
+        let rec = driverRecord.documents.find(r => r.typecode === "11");
+        if (rec) viewDocument(rec.recordid, 'Proper "DOT" Application Qualification');
     }
 
     return (<>
@@ -99,14 +93,6 @@ export const QualApplicationForm = ({ callback }) => {
 
             </ModalFormFooter>
         </ModalForm>
-        {pdfCard.open && <PDFModalContainer
-            source={`${pdfCard.data}`}
-            title="Driver Application"
-            height="800px"
-            width="1000px"
-            callback={() => setPdfCard({ open: false, data: "" })}
-        />
-        }
     </>)
 }
 

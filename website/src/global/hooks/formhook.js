@@ -56,8 +56,8 @@ export const useFormHook = (id, url) => {
 
     const serializeFormData = () => {        
         let data = new FormData()
-        for (let key in formControls) {
-            const el = document.getElementById(key)
+        for (let key in formControls) {            
+            const el = document.getElementById(key)            
             if(el && !el.getAttribute("data-ignore")) data.append(key, formControls[key] || "")
         }    
         return (data)

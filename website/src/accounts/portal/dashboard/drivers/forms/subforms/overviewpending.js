@@ -79,8 +79,7 @@ export const OverviewPending = ({ callback, settab }) => {
     const { globalState, fetchProfile } = useGlobalContext();
 
     const handleFormCallback = (res) => {
-        setSubForms({ record: {}, pending: false, discard: false, reject: false, policy: false, flag: false });        
-        console.log(res.status)
+        setSubForms({ record: {}, pending: false, discard: false, reject: false, policy: false, flag: false });                
         if (res.status === 200) {
             fetchProfile("accounts", globalState.account.recordid, globalState.user.recordid)
             callback()

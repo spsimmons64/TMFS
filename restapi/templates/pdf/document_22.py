@@ -102,8 +102,8 @@ def generate_report(licenseid,documentid):
     res_rec = get_reseller_from_account(acc_rec["recordid"])
     if not res_rec: return False    
     pdf  = PDF(res_rec,acc_rec,drv_rec)        
-    pdf.add_page()       
-    big_text = """DEPARTMENT OF TRANSPORTATION MOTOR CARRIER SAFETY PROGRAM INQUIRY TO STATE AGENCY FOR DRIVER'S RECORD"""
+    pdf.add_page()           
+    big_text = """DEPARTMENT OF TRANSPORTATION MOTOR CARRIER SAFETY PROGRAM INQUIRY TO STATE AGENCY FOR DRIVER'S RECORD"""    
     pdf.multi_cell(w=7.5,h=.2,text=big_text,align="C",ln=1)
     pdf.ln(.25)
     pdf.cell(w=1.28,h=.15,text="Driver Name:",align="R")

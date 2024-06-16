@@ -4,7 +4,7 @@ import { FormFlexRowStyle, FormTopLabel } from "../components/portals/formstyles
 import { FormDate, FormInput, FormSelect } from "../components/portals/inputstyles"
 import { useFormHook } from "../global/hooks/formhook"
 import { FormButton } from "../components/portals/buttonstyle"
-import { checkDate } from "../global/globals"
+import { checkDate, toSimpleDate } from "../global/globals"
 import { useGlobalContext } from "../global/contexts/globalcontext"
 import { ModalFormFooter } from "../components/global/forms/forms"
 
@@ -56,6 +56,7 @@ export const SignatureForm = ({ esignature, entity, resourceid, doctype, callbac
                 response.status === 200 && callback(response.data)
             }
         } else {
+            esignature.signaturedate = toSimpleDate(new Date())
             callback(esignature)
         }
     }

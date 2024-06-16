@@ -299,6 +299,13 @@ class Drivers(Resource):
         not_rec.update(record)
         not_rec["driverid"]= driverid
         return Database().insert("notifications",not_rec)
+    
+    def new_driver_license(self,driverid,record={}):
+        lic_rec = Database().prime("driverlicenses")
+        lic_rec["driverid"]
+        lic_rec.update(record)
+        return Database().insert("driverlicenses",lic_rec)
+
     #=============================================================================================================================================
     # Driver Getter Methods
     #=============================================================================================================================================
@@ -390,12 +397,13 @@ class Drivers(Resource):
         return fil_set if fil_cnt else []
 
     def get_driver_document_needs_review(self,driverid,entity):    
-        sql = "SELECT a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s"
-        if entity=="account": sql = f'{sql} AND accountreviewdate is NULL'
-        if entity=="reseller": sql = f'{sql} AND resellerreviewdate is NULL'
-        sql = f'{sql} AND a.deleted IS NULL'
-        doc_set,doc_cnt = Database().query(sql,(driverid))    
-        return doc_set if doc_cnt else []
+        # sql = "SELECT a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s"
+        # if entity=="account": sql = f'{sql} AND accountreviewdate is NULL'
+        # if entity=="reseller": sql = f'{sql} AND resellerreviewdate is NULL'
+        # sql = f'{sql} AND a.deleted IS NULL'
+        # doc_set,doc_cnt = Database().query(sql,(driverid))    
+        # return doc_set if doc_cnt else []
+        return []
 
     def get_driver_crashes(self,driverid):
         crash_list = []    
@@ -487,9 +495,12 @@ class Drivers(Resource):
             "cdlisreport": {"status":0,"text":"Not Required But Highly Recommended"},
             "qualificationlist": {"status":0,"text":"Incomplete"},
             "mvrreport": [],
-            "drivinginquiry": [],
+            "drivinginquiry": [],            
             "goodfaitheffort": [],
+            "dlcopy":{"status":0,"text":"Incomplete"},
+            "roadtest":{"status":0,"text":"Incomplete"}
         }
+
         lic_set = Drivers().get_driver_licenses(driverid)
         for lic_rec in lic_set:
             rec["mvrreport"].append({"licenseid":lic_rec["recordid"],"status":0,"text":"Not In Compliance"})
@@ -506,6 +517,14 @@ class Drivers(Resource):
                     if not rec["application"]["status"]:
                         rec["application"]["status"] = 1
                         rec["application"]["text"] = "Driver Application Is On File"
+                case "33":
+                    if not rec["roadtest"]["status"]:
+                        rec["roadtest"]["status"] = 1
+                        rec["roadtest"]["text"] = f"Completed On {complete_date}"
+                case "16":
+                    if not rec["dlcopy"]["status"]:
+                        rec["dlcopy"]["status"] = 1
+                        rec["dlcopy"]["text"] = f"Completed On {complete_date}"
                 case "40":                    
                     if not rec["chpreemployment"]["status"]:
                         rec["chpreemployment"]["status"] = 1
@@ -548,12 +567,7 @@ class Drivers(Resource):
                         if datediff < 365: new_rec = {"status":1,"text":f'Completed On {complete_date}'}
                         if datediff > 335: new_rec = {"status":2,"text":f'Completed On {complete_date}'}
                         if datediff >= 365: new_rec = {"status":3,"text":f'Expired {datediff-365} Days Ago'}
-                        rec["mvrreport"][ndx].update(new_rec)
-
-
-
-
-
+                        rec["mvrreport"][ndx].update(new_rec)                    
         if rec["pspreport"]["status"] == 0:
             psp_set,psp_cnt = Database().query("SELECT * FROM driverpsp WHERE driverid=%s AND deleted is NULL ORDER BY added DESC",driverid)
             if psp_cnt and psp_set[0]["status"] == "pending":
@@ -569,7 +583,10 @@ class Drivers(Resource):
             ndx = next((i for i, d in enumerate(rec["mvrreport"]) if d["licenseid"]==lic_rec["recordid"]),None)                                            
             if mvr_cnt and mvr_set[0]["status"] == "pending":                
                 mvr_new = {"status":4,"text":f'Pending As Of On {format_date_time(mvr_set[0]["requestdate"],"human_date")}'}
-                rec["mvrreport"][ndx].update(mvr_new)
+                rec["mvrreport"][ndx].update(mvr_new)        
+
+
+
                 
         return(rec)
 
