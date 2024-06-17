@@ -12,6 +12,7 @@ import { FormInput } from "../../../../../../components/portals/inputstyles"
 import { PDFContext } from "../../../../../../global/contexts/pdfcontext"
 import { useGlobalContext } from "../../../../../../global/contexts/globalcontext"
 import { UploadFileForm } from "../../../../../../classes/uploadfileform"
+import { RoadTestDocForm } from "./roadtestdocform"
 
 
 export const RoadTestForm = ({ callback }) => {
@@ -20,7 +21,7 @@ export const RoadTestForm = ({ callback }) => {
     const { driverRecord } = useContext(DriverContext)
     const [filefields, setFileFields] = useState("")
     const { qualifications } = useContext(QualificationsContext)
-    const { sendFormData, getValue, setFormBusy, formState } = useFormHook("pspreport-form")    
+    const { sendFormData, getValue, setFormBusy, formState } = useFormHook("pspreport-form")
     const [form, setForm] = useState({ form: "0", params: null })
 
     const handlePdf = async ({ target }) => {
@@ -38,23 +39,17 @@ export const RoadTestForm = ({ callback }) => {
         res.status === 200 && callback(res)
     }
 
-    const handleFileChange = ({ target }) => {
-        if (target.files && target.files.length) {
-            const filename = target.files[0].name
-            setFileFields(filename)
-        }
-    }
-
     const handleSetForm = ({ target }) => {
         const formId = target.getAttribute("data-form")
-        if (formId == "3"){
-            const params = {
+        let params = {}
+        if (formId == "3") {
+            params = {
                 description: `Copy Of Driver's License Uploaded By ${globalState.user.firstname} ${globalState.user.lastname}`,
                 additional: `Copy Of Driver's Current Driver's License`,
-                typecode: "16",                
+                typecode: "16",
             }            
-            setForm({ form: formId, params: params })            
         }
+        setForm({ form: formId, params: params })
     }
 
     const formCallback = () => { setForm({}) }
@@ -64,12 +59,13 @@ export const RoadTestForm = ({ callback }) => {
             <ModalFormHeader title="Road Test Of Copy Of Driver's License Qualification" busy={formState.busy} />
             <ModalFormBody id={formState.id} busy={formState.busy}>
                 <FormSection style={{ paddingTop: "0px" }}>
-                        This qualification requires either a copy of the drivers license be valid and on file, or a road test be administered
-                        and results entered into the program. &nbsp;
+                    This qualification requires either a copy of the drivers license be valid and on file, or a road test be administered
+                    and results entered into the program. &nbsp;
                     <Link to="https://www.ecfr.gov/current/title-49/section-391.31" target="_blank">FMCSA 49 CFR Part 391.31</Link> &&nbsp;
                     <Link to="https://www.ecfr.gov/current/title-49/section-391.33" target="_blank">FMCSA 49 CFR Part 391.33</Link>
                 </FormSection>
-                <FormSection style={{ borderBottom: qualifications.application.status == 1 ? "none" : "1px dotted #B6B6B6" }}>
+
+                <FormSection>
                     <FormFlexRowStyle>
                         <div style={{ width: "60px" }}>
                             <CircleBack color={getBubbleColor(qualifications.dlcopy.status)} size="40px">
@@ -79,27 +75,42 @@ export const RoadTestForm = ({ callback }) => {
                         <div style={{ flex: 1 }}>
                             <div>
                                 <div><strong>Copy Of Current Driver's License</strong></div>
-                                <div>{qualifications.dlcopy.text}</div>
+                                <div>If using this option, a copy of the drivers license must be valid and on file. Please select the appropriate
+                                    option below.
+                                </div>
                             </div>
                         </div>
                     </FormFlexRowStyle>
                     <div style={{ paddingLeft: "60px", marginTop: "10px" }}>
-                        {qualifications.dlcopy.status == 1 
-                            ?<FormButton data-id="16" onClick={handlePdf}>View Drivers License</FormButton>
-                            :<FormButton data-form="3" onClick={handleSetForm}>Upload Copy Of Driver's License</FormButton>
+                        {qualifications.dlcopy.status == 1
+                            ? <FormButton data-id="16" onClick={handlePdf}>View Drivers License</FormButton>
+                            : <FormButton data-form="3" onClick={handleSetForm}>Upload Copy Of Driver's License</FormButton>
                         }
                     </div>
                 </FormSection>
-                {qualifications.application.status == 0 &&
-                    <FormSection style={{ borderBottom: "none", marginBottom: "0px" }}>
-                        <div style={{ display: "flex" }}>
-                            <div style={{ flex: 1 }}><FormInput value={filefields} readOnly hideerror /></div>
-                            <div style={{ paddingLeft: "10px" }}>
-                                <FormButton onClick={() => document.getElementById('uploadfile').click()}>Select File</FormButton>
+
+                <FormSection>
+                    <FormFlexRowStyle>
+                        <div style={{ width: "60px" }}>
+                            <CircleBack color={getBubbleColor(qualifications.roadtest.status)} size="40px">
+                                <FontAwesomeIcon icon={getBubbleIcon(qualifications.roadtest.status)} />
+                            </CircleBack>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <div>
+                                <div><strong>Road Test</strong></div>
+                                <div>If using this option, a road test must be administered and the results entered into the
+                                    program. Please select the appropriate option below.
+                                </div>
                             </div>
                         </div>
-                    </FormSection>
-                }
+                    </FormFlexRowStyle>
+                    <FormFlexRowStyle style={{paddingLeft:"60px",marginTop:"10px"}}>
+                        <div><FormButton data-form="1" onClick={handleSetForm}>Complete Road Test</FormButton></div>
+                        <div><FormButton data-form="3" onClick={handleSetForm}>Upload Road Test</FormButton></div>
+                        <div><FormButton data-id="33" onClick={handlePdf}>View Road Test Results</FormButton></div>
+                    </FormFlexRowStyle>
+                </FormSection>
             </ModalFormBody>
             <ModalFormFooter style={{ justifyContent: "flex-end" }} busy={formState.busy}>
                 {qualifications.application.status == 0 &&
@@ -110,6 +121,7 @@ export const RoadTestForm = ({ callback }) => {
                 </FormButton>
             </ModalFormFooter>
         </ModalForm>
+        {form.form == "1" && <RoadTestDocForm callback={formCallback} params={form.params} />}
         {form.form == "3" && <UploadFileForm callback={formCallback} params={form.params} />}
     </>)
 }

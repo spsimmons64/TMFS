@@ -49,7 +49,7 @@ export const useFormHook = (id, url) => {
 
     const handleChange = (e) => {                          
         const { id, type, value, checked } = e.target;     
-        const newValue = type == "checkbox" ? (checked ? "Y" : "N") : value        
+        const newValue = type == "checkbox" ? (checked ? "1" : "0") : value        
         clearError(id)
         setValue(id,newValue)
     }
