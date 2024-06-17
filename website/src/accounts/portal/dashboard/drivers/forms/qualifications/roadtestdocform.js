@@ -5,11 +5,11 @@ import { DriverContext } from "../../contexts/drivercontext"
 import { FormSection, ModalFormBodyScroll, ModalFormFooter, ModalFormHeader, ModalFormScroll } from "../../../../../../components/global/forms/forms"
 import { FormFlexRowStyle, FormTopLabel } from "../../../../../../components/portals/formstyles"
 import { useGlobalContext } from "../../../../../../global/contexts/globalcontext"
-import { FormCheck, FormDate, FormInput, FormRadio, FormSelect, FormText } from "../../../../../../components/portals/inputstyles"
+import { FormDate, FormInput, FormRadio, FormSelect, FormText } from "../../../../../../components/portals/inputstyles"
 import { SignatureForm } from "../../../../../../classes/signatureform"
 import { checkDate, toSimpleDate } from "../../../../../../global/globals"
 import { useRestApi } from "../../../../../../global/hooks/apihook"
-import { statesArray } from "../../../../../../global/staticdata"
+import { statesArray, yesNoNaTypes } from "../../../../../../global/staticdata"
 import { v4 as uuidv4 } from 'uuid';
 
 export const RoadTestDocForm = ({ licenseid, callback }) => {
@@ -20,7 +20,7 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
     const [signature, setSignature] = useState({ id: "", date: " ", signature: "", signaturename: "" })
     const { fetchData } = useRestApi()
     const handleSignatureLookup = () => setSigLookup(true)
-    const [rowHovered,setRowHovered] = useState()
+    const [rowHovered, setRowHovered] = useState()
 
     const signatureCallBack = (sig_rec) => {
         sig_rec && setSignature({
@@ -62,7 +62,6 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
             callback()
         }
     }
-    
 
     const buildCheckFields = () => {
         const questionList = [
@@ -80,19 +79,25 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
             "Backing the vehicle",
             "Parking the vehicle",
         ]
-        return questionList.map((r,rndx)=>{
-            return(<>
-                <FormFlexRowStyle style={{flex:1}}>                    
-                    <div style={{flex:1}}><FormTopLabel>{r}</FormTopLabel></div>
-                    <div style={{width:"240px"}}><FormRadio name={`passfail${rndx}`} items={["Pass", "Fail", "N/A"]}/></div>
-                </FormFlexRowStyle>    
+        return questionList.map((r, rndx) => {
+            return (<>
+                <FormFlexRowStyle style={{ flex: 1 }}>
+                    <div style={{ flex: 1 }}><FormTopLabel>{r}</FormTopLabel></div>
+                    <div style={{ width: "240px" }}><FormRadio name={`passfail${rndx}`} items={["Pass", "Fail", "N/A"]} /></div>
+                </FormFlexRowStyle>
             </>)
         })
     }
 
     useEffect(() => {
         const defaults = {
-            testdate: toSimpleDate(new Date())
+            testdate: toSimpleDate(new Date()),
+            stclasshazmat : "A",
+            ttclasshazmat : "A",
+            smclasshazmat : "A",
+            dtclasshazmat : "A",
+            busclasshazmat : "A",
+            otclasshazmat : "A"    
         }
         buildFormControls(defaults)
     }, [])
@@ -153,10 +158,10 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
                         </div>
                     </FormFlexRowStyle>
                 </FormSection>
-                <FormSection style={{paddingBottom:"0px"}}>
-                    <div style={{ padding: "10px 0px", fontWeight: 700, color: "#164398" }}>Rating Of Performance. Please Select Pass Or Fail For Each Of The Following</div>
-                    {buildCheckFields()}                    
-                    <FormTopLabel style={{paddingTop:"5px"}}>Other, Explain:</FormTopLabel>
+                <FormSection style={{ paddingBottom: "0px" }}>
+                    <div style={{ padding: "10px 0px", fontWeight: 700, color: "#164398" }}>Rating Of Performance</div>
+                    {buildCheckFields()}
+                    <FormTopLabel style={{ paddingTop: "5px" }}>Other, Explain:</FormTopLabel>
                     <FormText
                         id="other"
                         value={getValue("other")}
@@ -164,6 +169,199 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
                         height="150px"
                         onChange={handleChange}
                     />
+                </FormSection>
+                <FormSection>
+                    <div style={{ padding: "10px 0px", fontWeight: 700, color: "#164398" }}>Type Of Equipment Used In Giving Test</div>
+                    <FormFlexRowStyle>
+                        <div style={{ width: "150px" }}>
+                            <FormTopLabel>Equipment Class</FormTopLabel>
+                            <FormInput value="Straight Truck" readOnly />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <FormTopLabel>Equipment Class</FormTopLabel>
+                            <FormInput
+                                id="stclasstype"
+                                value={getValue("stclasstype")}
+                                error={getError("stclasstype")}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div style={{ width: "100px" }}>
+                            <FormTopLabel>Hazmat</FormTopLabel>
+                            <FormSelect
+                                id="stclasshazmat"
+                                options = {yesNoNaTypes}
+                                value={getValue("stclasshazmat")}
+                                error={getError("stclasshazmat")}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div style={{ width: "100px" }}>
+                            <FormTopLabel>Approx Miles</FormTopLabel>
+                            <FormInput
+                                id="stclassmiles"
+                                mask="number"
+                                value={getValue("stclassmiles")}
+                                error={getError("stclassmiles")}
+                                onChange={handleChange}
+                            />
+                        </div>
+                    </FormFlexRowStyle>
+                    <FormFlexRowStyle>
+                        <div style={{ width: "150px" }}>
+                            <FormInput value="Truck-Tractor" readOnly />
+                        </div>
+                        <div style={{ flex: 1 }}>                            
+                            <FormInput
+                                id="ttclasstype"
+                                value={getValue("ttclasstype")}
+                                error={getError("ttclasstype")}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div style={{ width: "100px" }}>                            
+                            <FormSelect
+                                id="ttclasshazmat"
+                                options = {yesNoNaTypes}
+                                value={getValue("ttclasshazmat")}
+                                error={getError("ttclasshazmat")}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div style={{ width: "100px" }}>                            
+                            <FormInput
+                                id="ttclassmiles"
+                                mask="number"
+                                value={getValue("ttclassmiles")}
+                                error={getError("ttclassmiles")}
+                                onChange={handleChange}
+                            />
+                        </div>
+                    </FormFlexRowStyle>
+                    <FormFlexRowStyle>
+                        <div style={{ width: "150px" }}>
+                            <FormInput value="Semi-Trailers" readOnly />
+                        </div>
+                        <div style={{ flex: 1 }}>                            
+                            <FormInput
+                                id="smclasstype"
+                                value={getValue("smclasstype")}
+                                error={getError("smclasstype")}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div style={{ width: "100px" }}>                            
+                            <FormSelect
+                                id="smclasshazmat"
+                                options = {yesNoNaTypes}
+                                value={getValue("smclasshazmat")}
+                                error={getError("smclasshazmat")}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div style={{ width: "100px" }}>                            
+                            <FormInput
+                                id="smclassmiles"
+                                mask="number"
+                                value={getValue("smclassmiles")}
+                                error={getError("smclassmiles")}
+                                onChange={handleChange}
+                            />
+                        </div>
+                    </FormFlexRowStyle>
+                    <FormFlexRowStyle>
+                        <div style={{ width: "150px" }}>
+                            <FormInput value="Doubles / Triples" readOnly />
+                        </div>
+                        <div style={{ flex: 1 }}>                            
+                            <FormInput
+                                id="dtclasstype"
+                                value={getValue("dtclasstype")}
+                                error={getError("dtclasstype")}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div style={{ width: "100px" }}>                            
+                            <FormSelect
+                                id="dtclasshazmat"
+                                options = {yesNoNaTypes}
+                                value={getValue("dtclasshazmat")}
+                                error={getError("dtclasshazmat")}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div style={{ width: "100px" }}>                            
+                            <FormInput
+                                id="dtclassmiles"
+                                mask="number"
+                                value={getValue("dtclassmiles")}
+                                error={getError("dtclassmiles")}
+                                onChange={handleChange}
+                            />
+                        </div>
+                    </FormFlexRowStyle>                    
+                    <FormFlexRowStyle>
+                        <div style={{ width: "150px" }}>
+                            <FormInput value="Bus" readOnly />
+                        </div>
+                        <div style={{ flex: 1 }}>                            
+                            <FormInput
+                                id="busclasstype"
+                                value={getValue("busclasstype")}
+                                error={getError("busclasstype")}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div style={{ width: "100px" }}>                            
+                            <FormSelect
+                                id="busclasshazmat"
+                                options = {yesNoNaTypes}
+                                value={getValue("busclasshazmat")}
+                                error={getError("busclasshazmat")}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div style={{ width: "100px" }}>                            
+                            <FormInput
+                                id="busclassmiles"
+                                mask="number"
+                                value={getValue("busclassmiles")}
+                                error={getError("busclassmiles")}
+                                onChange={handleChange}
+                            />
+                        </div>
+                    </FormFlexRowStyle>
+                    <FormFlexRowStyle>
+                        <div style={{ width: "150px" }}>
+                            <FormInput value="Other" readOnly />
+                        </div>
+                        <div style={{ flex: 1 }}>                            
+                            <FormInput
+                                id="otclasstype"
+                                value={getValue("otclasstype")}
+                                error={getError("otclasstype")}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div style={{ width: "100px" }}>                            
+                            <FormSelect
+                                id="otclasshazmat"
+                                options = {yesNoNaTypes}
+                                value={getValue("otclasshazmat")}
+                                error={getError("otclasshazmat")}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div style={{ width: "100px" }}>                            
+                            <FormInput
+                                id="otclassmiles"
+                                mask="number"
+                                value={getValue("otclassmiles")}
+                                error={getError("otclassmiles")}
+                                onChange={handleChange}
+                            />
+                        </div>
+                    </FormFlexRowStyle>                                        
                 </FormSection>
                 <FormSection style={{ borderBottom: "none" }}>
                     <div style={{ padding: "10px 0px", fontWeight: 700, color: "#164398" }}>Conducted By</div>
