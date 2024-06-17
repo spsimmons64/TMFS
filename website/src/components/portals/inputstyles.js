@@ -140,6 +140,29 @@ margin-right: 10px;
 export const GridSearchInputStyle = styled.div`
 flex:1;
 `
+const FormRadioWrapper = styled.div`
+display: flex;
+flex-flow: ${props => props.direction = "verticle" ? "column" : "row"}
+margin-bottom: ${props => props.hideerror ? "0px" : "26px"};
+`
+const FormRadioContainer = styled.div`
+display: flex;
+align-items:center;
+`
+const FormRadioLabel = styled.label`
+padding:5px;
+display: flex;
+align-items:center;
+
+
+`
+const FormRadioStyle = styled.input`
+margin-right: 6px;
+width: 24px;
+height: 24px;
+accent-color: #164398;
+
+`
 const FormCheckContainer = styled.div`
 display: flex;
 align-items: center;
@@ -226,7 +249,7 @@ export const FormInput = (props) => {
                         onChange={onChange}
                         onBlur={onChange}
                         error={error}
-                        onPaste = {(e)=>{nopaste && e.preventDefault()}}
+                        onPaste={(e) => { nopaste && e.preventDefault() }}
                         {...numberLimit}
                     />
                 </InputFieldStyle>
@@ -447,5 +470,23 @@ export const FormCheck = (props) => {
             <FormCheckStyle type="checkbox" id={id} disabled={disabled} {...newProps} />
             <FormCheckLabel htmlFor={id} {...newProps}>{label}</FormCheckLabel>
         </FormCheckContainer>
+    )
+}
+export const FormRadio = (props) => {
+    const { name, label, dir, items, ...newProps } = props;
+    return (
+        <FormRadioWrapper hideerror="true" direction={dir}>
+            {items.map(r => {
+                return (
+                    <div style={{ flex: 1 }}>
+                        <FormRadioContainer>
+                            <FormRadioLabel>
+                                <FormRadioStyle type="radio" name={name} {...newProps} />{r}
+                            </FormRadioLabel>
+                        </FormRadioContainer>
+                    </div>
+                )
+            })}
+        </FormRadioWrapper>
     )
 }

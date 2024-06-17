@@ -1,67 +1,22 @@
-[2024-06-11 10:27:1718116028]
+[2024-06-14 11:32:1718379169]
 [Error Number] 1054
-[Error Msg] Unknown column 'accountreviewdate' in 'where clause'
-[SQL] SELECT SQL_CALC_FOUND_ROWS a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s AND accountreviewdate is NULL AND a.deleted IS NULL
+[Error Msg] Unknown column 'documentid' in 'where clause'
+[SQL] SELECT SQL_CALC_FOUND_ROWS * FROM documentmeta WHERE documentid=%s
 ------------------------------------------------------------------------------------------------------------------------
-[2024-06-12 11:46:1718207204]
+[2024-06-14 11:33:1718379187]
 [Error Number] 1054
-[Error Msg] Unknown column 'accountreviewdate' in 'where clause'
-[SQL] SELECT SQL_CALC_FOUND_ROWS a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s AND accountreviewdate is NULL AND a.deleted IS NULL
+[Error Msg] Unknown column 'documentid' in 'where clause'
+[SQL] SELECT SQL_CALC_FOUND_ROWS * FROM documentmeta WHERE documentid=%s
 ------------------------------------------------------------------------------------------------------------------------
-[2024-06-12 11:50:1718207417]
+[2024-06-14 11:34:1718379257]
 [Error Number] 1054
-[Error Msg] Unknown column 'accountreviewdate' in 'where clause'
-[SQL] SELECT SQL_CALC_FOUND_ROWS a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s AND accountreviewdate is NULL AND a.deleted IS NULL
+[Error Msg] Unknown column 'documentid' in 'where clause'
+[SQL] SELECT SQL_CALC_FOUND_ROWS * FROM documentmeta WHERE documentid=%s
 ------------------------------------------------------------------------------------------------------------------------
-[2024-06-12 11:51:1718207493]
+[2024-06-14 11:35:1718379346]
 [Error Number] 1054
-[Error Msg] Unknown column 'accountreviewdate' in 'where clause'
-[SQL] SELECT SQL_CALC_FOUND_ROWS a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s AND accountreviewdate is NULL AND a.deleted IS NULL
-------------------------------------------------------------------------------------------------------------------------
-[2024-06-12 11:52:1718207551]
-[Error Number] 1054
-[Error Msg] Unknown column 'accountreviewdate' in 'where clause'
-[SQL] SELECT SQL_CALC_FOUND_ROWS a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s AND accountreviewdate is NULL AND a.deleted IS NULL
-------------------------------------------------------------------------------------------------------------------------
-[2024-06-12 11:53:1718207624]
-[Error Number] 1054
-[Error Msg] Unknown column 'accountreviewdate' in 'where clause'
-[SQL] SELECT SQL_CALC_FOUND_ROWS a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s AND accountreviewdate is NULL AND a.deleted IS NULL
-------------------------------------------------------------------------------------------------------------------------
-[2024-06-12 11:58:1718207887]
-[Error Number] 1054
-[Error Msg] Unknown column 'accountreviewdate' in 'where clause'
-[SQL] SELECT SQL_CALC_FOUND_ROWS a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s AND accountreviewdate is NULL AND a.deleted IS NULL
-------------------------------------------------------------------------------------------------------------------------
-[2024-06-12 12:01:1718208085]
-[Error Number] 1054
-[Error Msg] Unknown column 'accountreviewdate' in 'where clause'
-[SQL] SELECT SQL_CALC_FOUND_ROWS a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s AND accountreviewdate is NULL AND a.deleted IS NULL
-------------------------------------------------------------------------------------------------------------------------
-[2024-06-12 12:33:1718209987]
-[Error Number] 1054
-[Error Msg] Unknown column 'accountreviewdate' in 'where clause'
-[SQL] SELECT SQL_CALC_FOUND_ROWS a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s AND accountreviewdate is NULL AND a.deleted IS NULL
-------------------------------------------------------------------------------------------------------------------------
-[2024-06-12 12:45:1718210700]
-[Error Number] 1054
-[Error Msg] Unknown column 'accountreviewdate' in 'where clause'
-[SQL] SELECT SQL_CALC_FOUND_ROWS a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s AND accountreviewdate is NULL AND a.deleted IS NULL
-------------------------------------------------------------------------------------------------------------------------
-[2024-06-12 12:50:1718211023]
-[Error Number] 1054
-[Error Msg] Unknown column 'accountreviewdate' in 'where clause'
-[SQL] SELECT SQL_CALC_FOUND_ROWS a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s AND accountreviewdate is NULL AND a.deleted IS NULL
-------------------------------------------------------------------------------------------------------------------------
-[2024-06-12 12:51:1718211094]
-[Error Number] 1054
-[Error Msg] Unknown column 'accountreviewdate' in 'where clause'
-[SQL] SELECT SQL_CALC_FOUND_ROWS a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s AND accountreviewdate is NULL AND a.deleted IS NULL
-------------------------------------------------------------------------------------------------------------------------
-[2024-06-12 12:58:1718211531]
-[Error Number] 1054
-[Error Msg] Unknown column 'accountreviewdate' in 'where clause'
-[SQL] SELECT SQL_CALC_FOUND_ROWS a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s AND accountreviewdate is NULL AND a.deleted IS NULL
+[Error Msg] Unknown column 'documentid' in 'where clause'
+[SQL] SELECT SQL_CALC_FOUND_ROWS * FROM documentmeta WHERE documentid=%s
 ------------------------------------------------------------------------------------------------------------------------
 [2024-06-17 09:58:1718632695]
 [Error Number] 1054

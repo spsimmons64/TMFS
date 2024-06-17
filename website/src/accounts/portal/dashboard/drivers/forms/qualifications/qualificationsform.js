@@ -9,7 +9,10 @@ import { useGlobalContext } from "../../../../../../global/contexts/globalcontex
 import { QualApplicationForm } from "./applicationform"
 import { getBubbleColor, getBubbleIcon } from "../../../../../../global/globals"
 import styled from "styled-components"
-import { DriverInquiryForm } from "./driverinquiry"
+import { DriverInquiryForm } from "./driverinquiryform"
+import { GoodFaithForm } from "./goodfaithform"
+import { faMinus } from "@fortawesome/free-solid-svg-icons"
+import { RoadTestForm } from "./roadtestform"
 
 
 const QualContainer = styled.div`
@@ -45,15 +48,29 @@ export const QualificationsForm = () => {
         res.status === 200 && setDriverRecord(res.data)
     }
 
-    const getDrivingInquiryStatus = ()  => {   
-        let status = 1     
-        qualifications.drivinginquiry.forEach(r=>{if (r.status==0) status = 0;})   
+    const getDrivingInquiryStatus = () => {
+        let status = 1
+        qualifications.drivinginquiry.forEach(r => { if (r.status == 0) status = 0; })
         return status
     }
 
-    const getGoodFaithStatus = ()  => {   
-        let status = 1     
-        qualifications.drivinginquiry.forEach(r=>{if (r.status==0) status = 0;})   
+    const getGoodFaithStatus = () => {
+        let status = 1
+        let mvr = true
+        qualifications.mvrreport.forEach(r => { if (r.status === 0 || r.status === 3) mvr = false })
+        if (mvr)
+            status = 5
+        else {
+            qualifications.goodfaitheffort.forEach(r => {
+                let mvr_rec = qualifications.mvrreport.find(q => q.licenseid === r.licenseid)
+                if (mvr_rec && r.status === 0 && mvr_rec.status === 0) status = 0
+            })
+        }
+        return status
+    }
+    const getRoadTestStatus = () => {
+        let status = 0
+        if (qualifications.roadtest.status==1 || qualifications.dlcopy.status==1) status = 1
         return status
     }
 
@@ -105,16 +122,21 @@ export const QualificationsForm = () => {
                         </Link>
                     </span>
                 </QualColumn2>
-                <QualColumn3>{getDrivingInquiryStatus()=== 0 ? "Incomplete" : "Complete For All Licenses"}</QualColumn3>
+                <QualColumn3>{getDrivingInquiryStatus() === 0 ? "Incomplete" : "Complete For All Licenses"}</QualColumn3>
                 <QualColumn4>
                     <FormButton style={{ width: "150px" }} onClick={() => setForm(1)}>View Details</FormButton>
                 </QualColumn4>
             </QualContainer>
             <QualContainer>
                 <QualColumn1>
-                    <CircleBack color={getBubbleColor(getDrivingInquiryStatus())} size="40px">
-                        <FontAwesomeIcon icon={getBubbleIcon(getDrivingInquiryStatus())} />
-                    </CircleBack>
+                    {getGoodFaithStatus() == 5
+                        ? <CircleBack color="blue" size="40px">
+                            <FontAwesomeIcon icon={faMinus} />
+                        </CircleBack>
+                        : <CircleBack color={getBubbleColor(getGoodFaithStatus())} size="40px">
+                            <FontAwesomeIcon icon={getBubbleIcon(getGoodFaithStatus())} />
+                        </CircleBack>
+                    }
                 </QualColumn1>
                 <QualColumn2>
                     <div><b>{"Good Faith Effort Document (When Required)"}</b></div>
@@ -126,14 +148,53 @@ export const QualificationsForm = () => {
                         </Link>
                     </span>
                 </QualColumn2>
-                <QualColumn3>{getGoodFaithStatus()=== 0 ? "Incomplete" : "Complete For All Licenses"}</QualColumn3>
+                <QualColumn3>
+                    {getGoodFaithStatus() === 0 && "Not Complete For All Licenses"}
+                    {getGoodFaithStatus() === 1 && "Complete For All Licenses"}
+                    {getGoodFaithStatus() === 5 && "Not Required"}
+                </QualColumn3>
                 <QualColumn4>
-                    <FormButton style={{ width: "150px" }} onClick={() => setForm(1)}>View Details</FormButton>
+                    <FormButton style={{ width: "150px" }} onClick={() => setForm(2)}>View Details</FormButton>
+                </QualColumn4>
+            </QualContainer>
+
+            <QualContainer>
+                <QualColumn1>
+                    <CircleBack color={getBubbleColor(getRoadTestStatus())} size="40px">
+                        <FontAwesomeIcon icon={getBubbleIcon(getRoadTestStatus())} />
+                    </CircleBack>
+                </QualColumn1>
+                <QualColumn2>
+                    <div><b>{"Road Test Or Copy Of Driver's License In Lieu Of Road Test"}</b></div>
+                    <span>
+                        <Link
+                            to="https://www.ecfr.gov/current/title-49/section-391.31"
+                            target="_blank"
+                        >FMCSA 49 CFR Part 391.31
+                        </Link>
+                        &nbsp;
+                        &
+                        &nbsp;
+                        <Link
+                            to="https://www.ecfr.gov/current/title-49/section-391.33"
+                            target="_blank"
+                        >FMCSA 49 CFR Part 391.33
+                        </Link>
+                    </span>
+                </QualColumn2>
+                <QualColumn3>
+                    {getRoadTestStatus() === 0 && "Not In Compliance"}
+                    {getRoadTestStatus() === 1 && "Complete"}
+                </QualColumn3>
+                <QualColumn4>
+                    <FormButton style={{ width: "150px" }} onClick={() => setForm(3)}>View Details</FormButton>
                 </QualColumn4>
             </QualContainer>
 
         </div>
-        {form == 0 && <QualApplicationForm callback={handleFormCallback}/>}
-        {form == 1 && <DriverInquiryForm callback={handleFormCallback}/>}
+        {form == 0 && <QualApplicationForm callback={handleFormCallback} />}
+        {form == 1 && <DriverInquiryForm callback={handleFormCallback} />}
+        {form == 2 && <GoodFaithForm callback={handleFormCallback} />}
+        {form == 3 && <RoadTestForm callback={handleFormCallback} />}
     </>)
 }

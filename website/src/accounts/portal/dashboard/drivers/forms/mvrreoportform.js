@@ -173,8 +173,7 @@ export const MVRReportForm = ({ callback }) => {
                                             value={r.checked || false}
                                             checked={r.checked}
                                             onChange={handleMVRToggle}
-                                            label="Run MVR Report For This License"
-                                            disabled={qualifications.mvrreport[rndx].status == 1 || qualifications.mvrreport[rndx].status == 4}
+                                            label="Run MVR Report For This License"                                            
                                             data-ignore
                                         />
                                     </div>

@@ -49,15 +49,15 @@ export const useFormHook = (id, url) => {
 
     const handleChange = (e) => {                          
         const { id, type, value, checked } = e.target;     
-        const newValue = type == "checkbox" ? (checked ? "Y" : "N") : value        
+        const newValue = type == "checkbox" ? (checked ? "1" : "0") : value        
         clearError(id)
         setValue(id,newValue)
     }
 
     const serializeFormData = () => {        
         let data = new FormData()
-        for (let key in formControls) {
-            const el = document.getElementById(key)
+        for (let key in formControls) {            
+            const el = document.getElementById(key)            
             if(el && !el.getAttribute("data-ignore")) data.append(key, formControls[key] || "")
         }    
         return (data)

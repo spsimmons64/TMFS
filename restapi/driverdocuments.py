@@ -12,9 +12,10 @@ from templates.pdf import outputpdf
 from templates.pdf import driverslicense
 from templates.pdf import medicalcard
 from templates.pdf import driverapplication
+from templates.pdf import document_20
+from templates.pdf import document_22
 from templates.pdf import document_39
 from templates.pdf import document_41
-from templates.pdf import document_22
 
 
 class DriverDocuments(Resource):     
@@ -46,6 +47,30 @@ class DriverDocuments(Resource):
                     return(False)      
                 case _: return True
         return False
+    
+    def __update_document_metadata(self,docid):        
+        complete = False        
+        match self.payload["typecode"]:
+            case "20":
+                met_rec = Database().prime("documentmeta")                
+                if met_rec:
+                    met_rec["driverdocumentid"] = docid
+                    met_rec["agencydate"] = self.payload["date"]
+                    met_rec["agencyname"] = self.payload["agency"]
+                    met_rec["agencyaddress"] = self.payload["address"]
+                    met_rec["agencycity"] = self.payload["city"]
+                    met_rec["agencystate"] = self.payload["state"]
+                    met_rec["agencyzipcode"] = self.payload["zipcode"]
+                    met_rec["agencycountry"] = self.payload["country"]
+                    met_rec["agencyphone"] = self.payload["telephone"]
+                    met_rec["agencyfax"] = self.payload["fax"]                    
+                    if self.payload["reason"] == "other":
+                        met_rec["agencyreason"] = self.payload["otherreason"]
+                    else:
+                        met_rec["agencyreason"] = self.payload["reason"]
+                    if Database().insert("documentmeta",met_rec): complete = True
+            case "_": complete = True
+        return complete
 
     def __get_document_type(self,typecode):
         typ_set,typ_cnt = Database().query("SELECT * FROM documenttypes WHERE typecode=%s AND deleted IS NULL",(typecode))
@@ -73,11 +98,9 @@ class DriverDocuments(Resource):
             else:
                 images = file_to_image(filelist[0])                              
             outputpdf.generate_pdf_file(images,record["driverid"],f'{new_rec["recordid"]}.pdf',typ_rec["category"])             
-            complete = True                        
+            complete = True            
         return complete
     
-
-
     def upload_driver_document(self):
         file_list = request.files.getlist("files[]")          
         typ_rec = self.__get_document_type(self.payload["typecode"])                
@@ -89,8 +112,8 @@ class DriverDocuments(Resource):
             "description": self.payload["description"] if "description" in self.payload else typ_rec["category"]
         }              
         if(self.__process_files(file_rec,file_list) and
-           self.__update_driver_dates(self.payload["driverid"],typ_rec["typecode"],licenseid=file_rec["licenseid"],filedate=file_rec["filedate"]) and               
-           EmailQueue().addQueue(f'driver_uplod_{typ_rec["typecode"]}',self.payload["driverid"])): 
+           self.__update_driver_dates(self.payload["driverid"],typ_rec["typecode"],licenseid=file_rec["licenseid"],filedate=file_rec["filedate"])): 
+                if typ_rec["typecode"] == "16": Drivers().new_driver_license(self.payload["driverid"],self.payload)
                 return Drivers().fetch_formatted_driver(driverid=self.payload["driverid"],msg="Document Has Been Uploaded")
         return build_response(status=400,message="Unable To Create Document! Contact Support!")
     
@@ -107,7 +130,7 @@ class DriverDocuments(Resource):
                 "description": typ_rec["category"]
             }                
             if(self.__process_files(file_rec,file_list) and
-               self.__update_driver_dates(self.payload["driverid"],typ_rec["typecode"])):
+               self.__update_driver_dates(self.payload["driverid"],typ_rec["typecode"])):                                        
                     return build_response(status=200,data=set_record_prefix("doc",Drivers().get_driver_documents(self.payload["driverid"])))
         return build_response(status=400,message="Unable To Upload Your Document At This Time. Contact Support.")
 
@@ -123,8 +146,9 @@ class DriverDocuments(Resource):
             doc_rec["accountsignatureid"] = self.payload["esignatureid"]
             doc_rec["accountsignaturedate"] = self.payload["completedate"]
             doc_rec["filename"] = f'{typ_rec["category"]}{file_ext}'
-            doc_rec["filedate"] = get_sql_date_time()
-            if Database().insert("driverdocuments",doc_rec):
+            doc_rec["filedate"] = get_sql_date_time()                        
+            new_rec = Database().insert("driverdocuments",doc_rec) 
+            if new_rec and self.__update_document_metadata(new_rec["recordid"]):
                 return Drivers().fetch_formatted_driver(driverid=self.payload["driverid"],msg="Document Has Been Created")
         return build_response(status=400,message="Unable To Create Document! Contact Support!")
 
@@ -132,14 +156,14 @@ class DriverDocuments(Resource):
 
     def fetch_document(self):                      
         file = ""
-        doc_rec = Database().fetch("driverdocuments",self.payload["id"])        
-        
+        doc_rec = Database().fetch("driverdocuments",self.payload["id"])                
         typ_rec = Database().fetch("documenttypes",doc_rec["documenttypeid"])                
         if doc_rec and typ_rec:                        
             if doc_rec["uploaded"] == "Y":                
                 file = os.path.join(app.config["PROFILE_PATH"],doc_rec["driverid"],f'{doc_rec["recordid"]}.pdf')
             else:                                          
                 if typ_rec["typecode"] == "11": file = driverapplication.generate_application_pdf(self.payload["id"])
+                if typ_rec["typecode"] == "20": file = document_20.generate_report(doc_rec["driverslicenseid"],doc_rec["recordid"])                
                 if typ_rec["typecode"] == "22": file = document_22.generate_report(doc_rec["driverslicenseid"],doc_rec["recordid"])                
                 if typ_rec["typecode"] == "39": file = document_39.generate_report(doc_rec["recordid"])                    
                 if typ_rec["typecode"] == "41": file = document_41.generate_report(self.payload["id"])                                                        

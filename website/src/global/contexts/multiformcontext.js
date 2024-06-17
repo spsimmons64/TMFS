@@ -35,7 +35,6 @@ export const MultiFormContextProvider = ({ id, url, children }) => {
         const field = formControls[id]
         return field ? formControls[id] : ""
     }
-
     
     const setValue = (id, value, type = "input") => {  
         let newValue = value

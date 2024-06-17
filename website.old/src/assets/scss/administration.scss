@@ -1,0 +1,95 @@
+:root {
+    --card-background: #FFFFFF;
+    --card-border: #164398;
+    --card-header: #164398;
+    --card-header-text: #E6E6E6;
+    --card-header-icon: #76B66A;
+    --card-footer-background: #E6E6E6;
+    --card-button-background: #76B66A;
+    --card-button-text: #333333;
+    --card-button-border: #44783b;
+    --card-button-active: #61ab54;
+    --link-button-text: #164398;
+
+    --login-disclaimer-text: #4d4d4d;
+
+    --top-nav-background: linear-gradient(#808080, #3c3c3c);
+    --top-nav-text: #F2F2F2;
+
+    --app-background: #E6E6E6;
+    --app-text: #404040;
+
+    --yesno-dialog-border: #b3b300;
+
+    --panel-border: #A6A6A6;
+    --panel-background: #FFFFFF;
+    --panel-header-background: #e6e6e6;
+    --panel-footer-background: #e6e6e6;
+
+    --sidenav-item-select: #bcd0f5;
+    --sidenav-item-hover: #dfeedd;
+    --sidenav-item-text: #164398;
+    --sidenav-subitem-text: #76B66A;
+
+    --grid-column-header-background: #404040;
+    --grid-column-header-text: #E2E2E2;
+    --grid-loader-text: #76B66A;
+    --grid-column-text: #404040;
+    --grid-row-hover: #dfeedd;
+    --grid-action-edit: #b3b300;
+    --grid-action-view: #44783b;
+    --grid-action-move: #164398;
+    --grid-action-launch: purple;
+    --grid-action-notes: orange;
+    --grid-isdefault-icon: #164398;
+    --form-grid-header-background: #e6e6e6;
+
+    --global-message-error: red;
+    --global-message-info: green;
+    --global-message-warning: yellow;
+    --global-message-background: #f2f2f2;
+    --global-message-close-icon: #b3b3b3;
+    --global-yesno-border: #b3b300;
+
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+}
+
+body {
+    overflow: hidden;
+}
+
+.short {
+    width: 100%;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    user-select: none;
+}
+
+#root {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;    
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+}
+

@@ -299,6 +299,13 @@ class Drivers(Resource):
         not_rec.update(record)
         not_rec["driverid"]= driverid
         return Database().insert("notifications",not_rec)
+    
+    def new_driver_license(self,driverid,record={}):
+        lic_rec = Database().prime("driverlicenses")
+        lic_rec["driverid"]
+        lic_rec.update(record)
+        return Database().insert("driverlicenses",lic_rec)
+
     #=============================================================================================================================================
     # Driver Getter Methods
     #=============================================================================================================================================
@@ -390,12 +397,13 @@ class Drivers(Resource):
         return fil_set if fil_cnt else []
 
     def get_driver_document_needs_review(self,driverid,entity):    
-        sql = "SELECT a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s"
-        if entity=="account": sql = f'{sql} AND accountreviewdate is NULL'
-        if entity=="reseller": sql = f'{sql} AND resellerreviewdate is NULL'
-        sql = f'{sql} AND a.deleted IS NULL'
-        doc_set,doc_cnt = Database().query(sql,(driverid))    
-        return doc_set if doc_cnt else []
+        # sql = "SELECT a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s"
+        # if entity=="account": sql = f'{sql} AND accountreviewdate is NULL'
+        # if entity=="reseller": sql = f'{sql} AND resellerreviewdate is NULL'
+        # sql = f'{sql} AND a.deleted IS NULL'
+        # doc_set,doc_cnt = Database().query(sql,(driverid))    
+        # return doc_set if doc_cnt else []
+        return []
 
     def get_driver_crashes(self,driverid):
         crash_list = []    
@@ -476,154 +484,112 @@ class Drivers(Resource):
         return cor_set if cor_cnt else []
 
     def get_driver_statuses(self,driverid):
-        today = format_raw_date(datetime.today())
-        dat_rec = self.get_driver_dates(driverid,False)
-        rec = {}
-        if dat_rec:
-            #Application
-            application_status = 1 if dat_rec["new"] else 0
-            rec["application"] = {
-                "text":f'Completed on {format_date_time(dat_rec["new"],"human_date")}' if application_status else "No Application On File",            
-                "status": application_status
-            }
+        today = format_raw_date(datetime.today())        
+        rec = {
+            "application": {"status":0,"text":"Not In Compliance"},
+            "chpreemployment": {"status":0,"text":"Not In Compliance"},
+            "clearinghouse": {"status":0,"text":"Not In Compliance"},
+            "licenseexpires": {"status":0,"text":""},
+            "medcardexpires": {"status":0,"text":""},                        
+            "pspreport": {"status":0,"text":"Not In Compliance"},
+            "cdlisreport": {"status":0,"text":"Not Required But Highly Recommended"},
+            "qualificationlist": {"status":0,"text":"Incomplete"},
+            "mvrreport": [],
+            "drivinginquiry": [],            
+            "goodfaitheffort": [],
+            "dlcopy":{"status":0,"text":"Incomplete"},
+            "roadtest":{"status":0,"text":"Incomplete"}
+        }
 
-            #Pre Employment Clearinghouse
-            chpreemployment_status = 1 if dat_rec["chpreemployment"] else 0            
-            rec["chpreemployment"] = {            
-                "text": f'Completed On {format_date_time(dat_rec["chpreemployment"],"human_date")}' if chpreemployment_status else "Not In Compliance",            
-                "status": chpreemployment_status
-            }
-            #Clearinghouse
-            clearinghouse_status = 1 if dat_rec["clearinghouse"] else 0     
-            if dat_rec["clearinghouse"]:
-                datediff = (today - format_raw_date(dat_rec["clearinghouse"])).days
-                if 0 < datediff < 30: status = 2
-                if datediff > 365: status = 3            
-            rec["clearinghouse"] = {            
-                "text": f'Completed On {format_date_time(dat_rec["clearinghouse"],"human_date")}' if clearinghouse_status else "Not In Compliance",            
-                "status": clearinghouse_status
-            }
-            #PSP Report        
-            psp_status = 0
-            sql = "SELECT * FROM driverpsp WHERE driverid=%s AND deleted IS NULL ORDER BY requestdate DESC"        
-            psp_set,psp_cnt = Database().query(sql,(driverid))
-            if psp_cnt:
-                psp_rec = psp_set[0]
-                psp_status = 1
-                if psp_rec["returndate"]:                
-                    datediff = (today - format_raw_date(psp_rec["returndate"])).days            
-                    if 0 < datediff < 30: psp_status = 2
-                    if datediff > 365: psp_status = 3
-                else: psp_status=4  
-            psp_text =  f'Completed On {format_date_time(psp_rec["returndate"],"human_date")}' if psp_status else "No PSP Reports On File",      
-            if psp_status==4: psp_text = f'Pending As Of {format_date_time(psp_rec["requestdate"],"human_date")}'
-           
-            rec["pspreport"]={
-                "text": psp_text,
-                "status": psp_status
-            }
+        lic_set = Drivers().get_driver_licenses(driverid)
+        for lic_rec in lic_set:
+            rec["mvrreport"].append({"licenseid":lic_rec["recordid"],"status":0,"text":"Not In Compliance"})
+            rec["drivinginquiry"].append({"licenseid":lic_rec["recordid"],"status":0,"text":"Not In Compliance"})
+            rec["goodfaitheffort"].append({"licenseid":lic_rec["recordid"],"status":0,"text":""})
+        sql = ("SELECT a.*,b.typecode FROM driverdocuments a JOIN documenttypes b on b.recordid=a.documenttypeid "
+               "WHERE driverid=%s AND a.deleted IS NULL ORDER BY added DESC")
+        doc_set,doc_cnt = Database().query(sql,(driverid))        
+        for doc_rec in doc_set:
+            datediff = (today - format_raw_date(doc_rec["added"])).days          
+            complete_date = format_date_time(doc_rec["added"],"human_date")
+            match doc_rec["typecode"]:                
+                case "11":                    
+                    if not rec["application"]["status"]:
+                        rec["application"]["status"] = 1
+                        rec["application"]["text"] = "Driver Application Is On File"
+                case "33":
+                    if not rec["roadtest"]["status"]:
+                        rec["roadtest"]["status"] = 1
+                        rec["roadtest"]["text"] = f"Completed On {complete_date}"
+                case "16":
+                    if not rec["dlcopy"]["status"]:
+                        rec["dlcopy"]["status"] = 1
+                        rec["dlcopy"]["text"] = f"Completed On {complete_date}"
+                case "40":                    
+                    if not rec["chpreemployment"]["status"]:
+                        rec["chpreemployment"]["status"] = 1
+                        rec["chpreemployment"]["text"] = f'Completed On {complete_date}'                    
+                    if not rec["clearinghouse"]["status"]:                        
+                        if datediff < 365: 
+                            rec["clearinghouse"]["status"] = 1
+                            rec["clearinghouse"]["text"] = f'Completed On {complete_date}.'
+                        if datediff > 335: 
+                            rec["clearinghouse"]["status"] = 2
+                            rec["clearinghouse"]["text"] = f'Completed On {complete_date}. Expiring in {365-datediff} Days'
+                        if datediff >= 365: 
+                            rec["clearinghouse"]["status"] = 3
+                            rec["clearinghouse"]["text"] = f'Expired in {datediff-365} Days Ago'                
+                case "31":                    
+                    if not rec["pspreport"]["status"]:
+                        rec["pspreport"]["status"] = 1
+                        rec["pspreport"]["text"] = f'Completed On {complete_date}'                    
+                case "15":                    
+                    if not rec["cdlisreport"]["status"]:
+                        sql = "SELECT * FROM drivercdlis WHERE driverid=%s AND deleted IS NULL ORDER BY added DESC"                        
+                        cdlis_set,cdlis_cnt = Database().query(sql,(driverid))                        
+                        if cdlis_cnt and cdlis_set[0]["status"] == "pending":
+                            rec["cdlisreport"]["status"] = 4
+                            rec["cdlisreport"]["text"] = f'Pending As Of {format_date_time(cdlis_set[0]["added"])}'
+                        else:
+                            rec["cdlisreport"]["status"] = 1
+                            rec["cdlisreport"]["text"] = f'Completed On {complete_date}' 
+                case "22":
+                    ndx = next((i for i, d in enumerate(rec["drivinginquiry"]) if d["licenseid"]==doc_rec["driverslicenseid"]),None)                    
+                    if ndx+1: rec["drivinginquiry"][ndx].update({"status":1,"text":f'Completed On {complete_date}'})
+
+                case "20":
+                    ndx = next((i for i, d in enumerate(rec["goodfaitheffort"]) if d["licenseid"]==doc_rec["driverslicenseid"]),None)                    
+                    if ndx+1: rec["goodfaitheffort"][ndx].update({"status":1,"text":f'Completed On {complete_date}'})
+
+                case "25":
+                    ndx = next((i for i, d in enumerate(rec["mvrreport"]) if d["licenseid"]==doc_rec["driverslicenseid"]),None)
+                    if ndx:                        
+                        if datediff < 365: new_rec = {"status":1,"text":f'Completed On {complete_date}'}
+                        if datediff > 335: new_rec = {"status":2,"text":f'Completed On {complete_date}'}
+                        if datediff >= 365: new_rec = {"status":3,"text":f'Expired {datediff-365} Days Ago'}
+                        rec["mvrreport"][ndx].update(new_rec)                    
+        if rec["pspreport"]["status"] == 0:
+            psp_set,psp_cnt = Database().query("SELECT * FROM driverpsp WHERE driverid=%s AND deleted is NULL ORDER BY added DESC",driverid)
+            if psp_cnt and psp_set[0]["status"] == "pending":
+                psp_new = {"status":4,"text":f'Pending As Of On {format_date_time(psp_set[0]["requestdate"],"human_date")}'}
+                rec["pspreport"].update(psp_new)
+        if rec["cdlisreport"]["status"] == 0:
+            cdl_set,cdl_cnt = Database().query("SELECT * FROM drivercdlis WHERE driverid=%s AND deleted is NULL ORDER BY added DESC",driverid)
+            if cdl_cnt and cdl_set[0]["status"] == "pending":
+                cdl_new = {"status":4,"text":f'Pending As Of On {format_date_time(cdl_set[0]["requestdate"],"human_date")}'}
+                rec["cdlisreport"].update(cdl_new)
+        for lic_rec in lic_set:  
+            mvr_set,mvr_cnt = Database().query("SELECT * FROM drivermvr WHERE driverlicensesid=%s AND deleted IS NULL ORDER BY added DESC",lic_rec["recordid"])                        
+            ndx = next((i for i, d in enumerate(rec["mvrreport"]) if d["licenseid"]==lic_rec["recordid"]),None)                                            
+            if mvr_cnt and mvr_set[0]["status"] == "pending":                
+                mvr_new = {"status":4,"text":f'Pending As Of On {format_date_time(mvr_set[0]["requestdate"],"human_date")}'}
+                rec["mvrreport"][ndx].update(mvr_new)        
 
 
-            #MVR Report
-            lic_set = self.get_driver_licenses(driverid,False)
-            rec["mvrreport"] = []
-            for lic_rec in lic_set:
-                mvr_status = -1
-                if not lic_rec["mvrdate"]:
-                    mvr_status = 0
-                    mvr_text = "No MVR On File For This License"
-                else:
-                    datediff = (today - format_raw_date(lic_rec["mvrdate"])).days
-                    mvr_status = 1
-                    mvr_text = f'MVR Report Completed {format_date_time(lic_rec["mvrdate"],"human_date")}'                    
-                    if 0 < datediff < 30:mvr_status = 2                        
-                    if datediff > 365:
-                        mvr_status = 3
-                        mvr_text = f'MVR Report Out Of Compliance'                                            
-                if mvr_status == -1:                    
-                    sql = "SELECT * FROM drivermvr WHERE driverlicensesid=%s AND deleted IS NULL ORDER BY added DESC"                    
-                    mvr_set,mvr_cnt = Database().query(sql,(lic_rec["recordid"]))                                        
-                    if mvr_cnt:
-                        mvr_rec = mvr_set[0]
-                        mvr_status=1
-                        mvr_text = f'MVR Report Completed {format_date_time(mvr_rec["returndate"],"human_date")}'                    
-                        if  mvr_rec["status"] == "pending":                                        
-                            mvr_status=4
-                            mvr_text = "MVR Report Is Currently Pending"                                                     
-                rec["mvrreport"].append({
-                    "licenseid": lic_rec["recordid"],                
-                    "text": mvr_text,
-                    "status": mvr_status
-                })
 
+                
+        return(rec)
 
-
-
-
-            # #CDLIS Report                
-            cdlis_status = 0
-            sql = "SELECT * FROM drivercdlis WHERE driverid=%s AND deleted IS NULL ORDER BY requestdate DESC"        
-            cdlis_set,cdlis_cnt = Database().query(sql,(driverid))
-            if cdlis_cnt:
-                cdlis_rec = cdlis_set[0]
-                cdlis_status = 1            
-                if cdlis_rec["returndate"]:
-                    datediff = (today - format_raw_date(cdlis_rec["returndate"])).days            
-                    if 0 < datediff < 30: cdlis_status = 2
-                    if datediff > 365: cdlis_status = 3
-                else: cdlis_status=4          
-            cdlis_text =  f'Completed On {format_date_time(cdlis_rec["returndate"],"human_date")}' if cdlis_status else "Not Required But Highly Recommended",      
-            if cdlis_status==4: cdlis_text = f'Pending As Of {format_date_time(cdlis_rec["requestdate"],"human_date")}'
-            rec["cdlisreport"]={
-                "text": cdlis_text,
-                "status": cdlis_status
-            }
-            #Drivers License        
-            lic_status = 0
-            if dat_rec["licenseexpires"]: lic_status=1
-            if dat_rec["licenseexpires"]:
-                datediff = (dat_rec["licenseexpires"]-today).days            
-                if 0 < datediff < 30: lic_status = 2
-                if datediff < 0 : lic_status = 3        
-            rec["license"] = {
-                "text": f'Expires On {format_date_time(dat_rec["licenseexpires"],"human_date")}' if lic_status else "N/A",                
-                "status": lic_status
-            }        
-            #Medical Certificate
-            med_status = 0
-            if dat_rec["medcardexpires"]: med_status=1
-            if dat_rec["medcardexpires"]:
-                datediff = (dat_rec["medcardexpires"]-today).days            
-                if 0 < datediff < 30: med_status = 2
-                if datediff < 0 : med_status = 3        
-            rec["medcard"] = {
-                "text": f'Expires On {format_date_time(dat_rec["medcardexpires"],"human_date")}' if lic_status else "N/A",                
-                "status": med_status
-            }   
-            #Inquiry Into Driving Record
-            rec["drivinginquiry"] = []
-            lic_set = self.get_driver_licenses(driverid,False)            
-            typ_set,typ_cnt = Database().query("SELECT * FROM documenttypes WHERE typecode=22 AND deleted IS NULL")
-            if typ_cnt:                                
-                for lic_rec in lic_set:                                    
-                    sql = "SELECT * FROM driverdocuments WHERE documenttypeid=%s AND driverslicenseid=%s AND deleted IS NULL"
-                    doc_set,doc_cnt = Database().query(sql,(typ_set[0]["recordid"],lic_rec["recordid"]))
-                    if doc_cnt:
-                        rec["drivinginquiry"].append({
-                            "text": f"Inquiry Completed on {format_date_time(doc_set[0]['added'],'human_date')}",
-                            "status": 1
-                        })
-                    else:
-                        rec["drivinginquiry"].append({
-                            "text":  "Incomplete",
-                            "status": 0
-                        })
-            #Qualifications List
-            rec["qualificationlist"] = {
-                "text": "Incomplete",
-                "status": 0
-            }
-            return(rec)
 
     def get_driver_by_ssn(self,ssn):
         ref_rec = Citadel().fetch_citadel(ssn,"socialsecurity")      
@@ -800,7 +766,7 @@ class Drivers(Resource):
             data.append(new_rec)            
         return build_response(status=200,data=data,count=rec_count)
 
-    def get (self,user):
+    def get (self,user):        
         if self.payload["action"]:
             match self.payload["action"]:
                 case "grid": return self.__get_driver_list(user)

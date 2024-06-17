@@ -1,4 +1,3 @@
-
 from io import BytesIO
 from flask_restful import Resource, request, current_app as app
 from database import Database

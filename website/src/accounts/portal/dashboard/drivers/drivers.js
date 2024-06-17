@@ -10,6 +10,7 @@ import { DQDriversGrid } from "./grids/dqdriversgrid"
 import { InactiveDriversGrid } from "./grids/inactivedriversgrid"
 import { IncompleteDriversGrid } from "./grids/incompletedriversgrid"
 import { QualificationsContextProvider } from "./classes/qualifications"
+import { PDFContextProvider } from "../../../../global/contexts/pdfcontext"
 
 
 export const Drivers = ({ drivertype }) => {
@@ -29,14 +30,17 @@ export const Drivers = ({ drivertype }) => {
     }, [drivertype])
 
     return (
-        <QualificationsContextProvider>
-            {drivertype === "alldrivers" && <AllDriversGrid />}
-            {drivertype === "activedrivers" && <ActiveDriversGrid />}
-            {drivertype === "pendingdrivers" && <PendingDriversGrid />}
-            {drivertype === "newdrivers" && <NewDriversGrid />}
-            {drivertype === "rejecteddrivers" && <RejectedDriversGrid />}
-            {drivertype === "dqdrivers" && <DQDriversGrid />}
-            {drivertype === "inactivedrivers" && <InactiveDriversGrid />}
-            {drivertype === "incompletedrivers" && <IncompleteDriversGrid />}
-        </QualificationsContextProvider>)
+        <PDFContextProvider>
+            <QualificationsContextProvider>
+                {drivertype === "alldrivers" && <AllDriversGrid />}
+                {drivertype === "activedrivers" && <ActiveDriversGrid />}
+                {drivertype === "pendingdrivers" && <PendingDriversGrid />}
+                {drivertype === "newdrivers" && <NewDriversGrid />}
+                {drivertype === "rejecteddrivers" && <RejectedDriversGrid />}
+                {drivertype === "dqdrivers" && <DQDriversGrid />}
+                {drivertype === "inactivedrivers" && <InactiveDriversGrid />}
+                {drivertype === "incompletedrivers" && <IncompleteDriversGrid />}
+            </QualificationsContextProvider>
+        </PDFContextProvider>
+    )
 }
