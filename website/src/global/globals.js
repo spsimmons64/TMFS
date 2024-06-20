@@ -123,6 +123,20 @@ export const calcDaysBetweenDates = (startDate, endDate) => {
     return differenceInDays;
 }
 
+export const convertSimpleDate = (dateString) => {
+    if(!dateString) return ""
+    let dateParts = dateString.split('-');
+    return `${dateParts[1]}/${dateParts[2]}/${dateParts[0]}`
+}
+
+export const convertToIsoDate = (dateString) => {
+    if(!dateString) return ""
+    let dateParts = dateString.split('/');    
+    return `${dateParts[2]}-${dateParts[0]}-${dateParts[1]}`
+
+}
+
+
 export function convertToDate(dateString) {
     let dateParts = dateString.split('-');
     let year = parseInt(dateParts[0], 10);

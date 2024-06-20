@@ -40,6 +40,7 @@ export const DriverInquiryLetterForm = ({ licenseid, callback }) => {
         data.append("typecode", "22")
         data.append("esignatureid", signature.id)
         data.append("completedate", signature.date)
+        data.append("position",globalState.user.position)
         const res = await fetchData("driverdocs", "post", data)
         res.status == 200 && setDriverRecord(res.data)
         callback()

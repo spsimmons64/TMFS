@@ -4,7 +4,7 @@ from database import Database
 from api_response import build_response,check_token
 from toolbox import *
 from queries import *
-from staticdata import states
+from staticdata import states,countries
 from citadel import Citadel
 from emailqueue import EmailQueue
 from transactions import Transactions
@@ -306,6 +306,28 @@ class Drivers(Resource):
         lic_rec.update(record)
         return Database().insert("driverlicenses",lic_rec)
 
+    def upload_license(self,driverid,record):
+        complete = True
+        if record["uploadtype"] == "1": return True
+        cur_rec = self.get_driver_current_license(driverid)
+        new_rec = Database().prime("driverlicenses")                    
+        if record["uploadtype"] in("2","5"): new_rec.update(cur_rec)
+        new_rec.update(record)       
+        lic_new = Database().insert("driverlicenses",new_rec)
+        if lic_new:
+            if cur_rec:
+                cur_rec["deleted"] = get_sql_date_time()
+                if Database().update("driverlicenses",cur_rec):
+                    if cur_rec["state"] == record["state"]:
+                        sql = "SELECT * FROM drivermvr WHERE driverlicenseid=%s AND deleted IS NULL ORDER BY returdate DESC"                        
+                        mvr_set,mvr_cnt = Database().query(sql,cur_rec["recordid"])
+                        if mvr_cnt:
+                            mvr_new = mvr_set[0]
+                            mvr_new["driverlicenseid"] = lic_new["recordid"]
+                            if not Database().insert("drivermvr",mvr_new): complete = False
+        else:
+            complete = False
+        return complete
     #=============================================================================================================================================
     # Driver Getter Methods
     #=============================================================================================================================================
@@ -491,14 +513,15 @@ class Drivers(Resource):
             "clearinghouse": {"status":0,"text":"Not In Compliance"},
             "licenseexpires": {"status":0,"text":""},
             "medcardexpires": {"status":0,"text":""},                        
-            "pspreport": {"status":0,"text":"Not In Compliance"},
+            "pspreport": {"status":0,"text":"Incomplete"},
             "cdlisreport": {"status":0,"text":"Not Required But Highly Recommended"},
             "qualificationlist": {"status":0,"text":"Incomplete"},
             "mvrreport": [],
             "drivinginquiry": [],            
             "goodfaitheffort": [],
             "dlcopy":{"status":0,"text":"Incomplete"},
-            "roadtest":{"status":0,"text":"Incomplete"}
+            "roadtest":{"status":0,"text":"Incomplete"},
+            "roadtestcert":{"status":0,"text":"Incomplete","date":"","miles":0}
         }
 
         lic_set = Drivers().get_driver_licenses(driverid)
@@ -521,6 +544,19 @@ class Drivers(Resource):
                     if not rec["roadtest"]["status"]:
                         rec["roadtest"]["status"] = 1
                         rec["roadtest"]["text"] = f"Completed On {complete_date}"
+                        met_set,met_cnt= Database().query("SELECT * FROM documentmeta WHERE driverdocumentid=%s",doc_rec["recordid"])
+                        if met_cnt:
+                            rec["roadtest"]["date"] = format_date_time(met_set[0]["roadtestdate"],"sql_date")
+                            rec["roadtest"]["miles"] = (met_set[0]["stclassmiles"]+
+                                                        met_set[0]["ttclassmiles"]+
+                                                        met_set[0]["smclassmiles"]+
+                                                         met_set[0]["dtclassmiles"]+
+                                                         met_set[0]["busclassmiles"]+
+                                                         met_set[0]["otclassmiles"])
+                case "34":
+                    if not rec["roadtestcert"]["status"]:
+                        rec["roadtestcert"]["status"] = 1
+                        rec["roadtestcert"]["text"] = f"Completed On {complete_date}"
                 case "16":
                     if not rec["dlcopy"]["status"]:
                         rec["dlcopy"]["status"] = 1
@@ -555,15 +591,17 @@ class Drivers(Resource):
                             rec["cdlisreport"]["text"] = f'Completed On {complete_date}' 
                 case "22":
                     ndx = next((i for i, d in enumerate(rec["drivinginquiry"]) if d["licenseid"]==doc_rec["driverslicenseid"]),None)                    
-                    if ndx+1: rec["drivinginquiry"][ndx].update({"status":1,"text":f'Completed On {complete_date}'})
+                    if ndx is not None and ndx+1: 
+                        rec["drivinginquiry"][ndx].update({"status":1,"text":f'Completed On {complete_date}'})
 
                 case "20":
                     ndx = next((i for i, d in enumerate(rec["goodfaitheffort"]) if d["licenseid"]==doc_rec["driverslicenseid"]),None)                    
-                    if ndx+1: rec["goodfaitheffort"][ndx].update({"status":1,"text":f'Completed On {complete_date}'})
+                    if ndx is not None and ndx+1: 
+                        rec["goodfaitheffort"][ndx].update({"status":1,"text":f'Completed On {complete_date}'})
 
                 case "25":
                     ndx = next((i for i, d in enumerate(rec["mvrreport"]) if d["licenseid"]==doc_rec["driverslicenseid"]),None)
-                    if ndx:                        
+                    if ndx is not None and ndx+1:                     
                         if datediff < 365: new_rec = {"status":1,"text":f'Completed On {complete_date}'}
                         if datediff > 335: new_rec = {"status":2,"text":f'Completed On {complete_date}'}
                         if datediff >= 365: new_rec = {"status":3,"text":f'Expired {datediff-365} Days Ago'}
@@ -589,7 +627,6 @@ class Drivers(Resource):
 
                 
         return(rec)
-
 
     def get_driver_by_ssn(self,ssn):
         ref_rec = Citadel().fetch_citadel(ssn,"socialsecurity")      
@@ -683,7 +720,12 @@ class Drivers(Resource):
         lic_set = self.get_driver_licenses(drv_rec["recordid"],False)                
         for lic_rec in lic_set:            
             found_state = next((state["text"] for state in states if state["value"] == lic_rec["state"]), None)            
+            found_country = next((cntry["text"] for cntry in countries if cntry["value"] == lic_rec["country"]), None)            
+            lic_rec["rawstate"] = lic_rec["state"]
+            lic_rec["rawcountry"] = lic_rec["country"]
             lic_rec["state"] = found_state
+            lic_rec["country"] = found_country
+            
             lic_rec["issued"] = format_date_time(lic_rec["issued"],"human_date")
             lic_rec["expires"] = format_date_time(lic_rec["expires"],"human_date")
             licenses.append(lic_rec)

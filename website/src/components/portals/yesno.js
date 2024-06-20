@@ -13,6 +13,7 @@ width:${props => props.toggle ? "100%" : "0px"};
 height:${props => props.toggle ? "100%" : "0px"};
 background-color: rgba(0,0,0,45%);
 transition: all .5 ease;
+z-index: 9999;
 `
 const YesNoContainerStyle = styled.div`
 position:absolute;
@@ -25,7 +26,7 @@ background-color: #F2F2F2;
 border-radius:5px;
 overflow: hidden;
 box-shadow: 4.1px 8.2px 8.2px hsl(0deg 0% 0% / 0.77);
-
+z-index: 10000;
 `
 const YesNoInnerContainerStyle = styled.div`
 display: flex;
@@ -34,6 +35,7 @@ border: 3px solid #164398;
 border-radius:5px;
 width: 100%;
 height: 100%;
+
 `
 const YesNoInfoContainerStyle = styled.div`
 flex:1;

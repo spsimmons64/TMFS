@@ -26,6 +26,7 @@ border-radius: 50%;
 font-weight:600;
 color:#F2F2F2;
 padding-left: 1px;
+
 `
 export const QualificationsContext = createContext()
 

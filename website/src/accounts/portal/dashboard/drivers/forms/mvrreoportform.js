@@ -89,10 +89,6 @@ export const MVRReportForm = ({ callback }) => {
         }
     }
 
-    console.log(driverRecord)
-
-
-
     const handleSubmit = async () => {
         let newList = licenseList.filter(r => r.checked).map(r => r.id)
         let data = new FormData()
@@ -141,14 +137,15 @@ export const MVRReportForm = ({ callback }) => {
                         <FormButton onClick={handlePdf}>View Signed FCRA Authorization</FormButton>
                     </div>
                 </FormSection>
-                <FormSection style={{ borderBottomColor: "#8ED9F6" }}>
-                    {licenseList.map((r, rndx) => {
-                        if (r.status == 1 && rndx > 0) return null
-                        let paerror = false
-                        let uterror = false
-                        if (r.state === "Pennsylvania" && !globalState.account.paaaccesscode) paerror = true;
-                        if (r.state === "Utah" && !globalState.account.utorigid) uterror = true;
-                        return (
+
+                {licenseList.map((r, rndx) => {
+                    if (r.status == 1 && rndx > 0) return null
+                    let paerror = false
+                    let uterror = false
+                    if (r.state === "Pennsylvania" && !globalState.account.paaaccesscode) paerror = true;
+                    if (r.state === "Utah" && !globalState.account.utorigid) uterror = true;
+                    return (
+                        <FormSection>
                             <div style={{ marginBottom: "10px" }} key={r.id}>
                                 <div style={{ display: "flex", width: "100%", padding: "5px 0px" }}>
                                     <div style={{ width: "60px" }}>
@@ -173,7 +170,8 @@ export const MVRReportForm = ({ callback }) => {
                                             value={r.checked || false}
                                             checked={r.checked}
                                             onChange={handleMVRToggle}
-                                            label="Run MVR Report For This License"                                            
+                                            label="Run MVR Report For This License"
+                                            disabled={qualifications.mvrreport[rndx].status === 4}
                                             data-ignore
                                         />
                                     </div>
@@ -193,10 +191,10 @@ export const MVRReportForm = ({ callback }) => {
                                     </>
                                 }
                             </div>
-                        )
-                    })}
-                </FormSection>
-                <FormSection style={{ backgroundColor: "#E3F7FC", borderColor: "#8ED9F6" }}>
+                        </FormSection>
+                    )
+                })}
+                <FormSection style={{ backgroundColor: "#E3F7FC" }}>
                     <div style={{ display: "flex" }}>
                         <div style={{ width: "60px" }}>
                             <CircleBack color="blue" size="40px"><FontAwesomeIcon icon={faInfo} /></CircleBack>

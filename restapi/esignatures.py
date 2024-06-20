@@ -9,19 +9,30 @@ from drivers import Drivers
 from citadel import Citadel
 
 class ESignatures(Resource): 
+    
     def __init__(self):
         self.payload = request.args.to_dict() if request.method == "GET" else request.form.to_dict()
         self.tokenid = app.config["GLOBAL_TOKEN_ID"]
         self.tokenkey = bytes.fromhex(app.config["GLOBAL_TOKEN_KEY"])
         self.params = []
 
+
+    def __lookup_signature(self):        
+        sql = "SELECT * FROM esignatures WHERE birthdate=%s AND deleted IS NULL"
+        sig_set,sig_cnt = Database().query(sql,(self.payload["birthdate"]))
+        for sig_rec in sig_set:            
+            if self.payload["socialsecurity"]==Citadel().decrypt(sig_rec["socialsecurity"]):
+                sig_rec["esignature"] = base64.b64encode(sig_rec["esignature"]).decode("utf-8")
+                return build_response(status=200,data=sig_set[0])
+        return build_response(status=400)
+
     def post(self):                              
+        if self.payload["action"] == "lookup": return self.__lookup_signature()
         esig_rec = Database().prime("esignatures")                        
         esig_rec["socialsecurity"] = Citadel().encrypt_store(self.payload["socialsecurity"],"esignature_ssn")
         esig_rec["birthdate"] = self.payload["birthdate"]
         esig_rec["ipaddress"] = request.remote_addr            
-        esig_rec["resourceid"] = self.payload["resourceid"]
-        esig_rec["resource"] = self.payload["entity"]
+        esig_rec["resourceid"] = self.payload["resourceid"]        
         esig_rec["signaturename"] = self.payload["entityname"]
         esig_new = Database().insert("esignatures",esig_rec)            
         if esig_new:            

@@ -8,6 +8,7 @@
   background: rgba(0, 0, 0, 0.35);
   align-items: center;
   justify-content: center;
+  z-index: 999;
 }
 
 .div-modal-form-header,
@@ -79,6 +80,7 @@
   color: #333333;
   border-radius: 5px;
   box-shadow: 4.1px 8.2px 8.2px hsla(0, 0%, 0%, 0.77);
+  z-index: 1000;
 }
 
 .div-modal-scroll-form-container {
@@ -89,7 +91,7 @@
   color: #333333;
   border-radius: 5px;
   box-shadow: 4.1px 8.2px 8.2px hsla(0, 0%, 0%, 0.77);
-  transition: all 0.2s ease-in-out;
+  z-index: 1000;
 }
 
 .div-modal-form-body {

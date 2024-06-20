@@ -1,25 +1,10 @@
-[2024-06-14 11:32:1718379169]
-[Error Number] 1054
-[Error Msg] Unknown column 'documentid' in 'where clause'
-[SQL] SELECT SQL_CALC_FOUND_ROWS * FROM documentmeta WHERE documentid=%s
+[2024-06-19 13:26:1718818018]
+[Error Number] 1292
+[Error Msg] Incorrect datetime value: 'undefined' for column `tmfs_dev`.`driverdocuments`.`accountsignaturedate` at row 1
+[SQL] INSERT INTO driverdocuments(recordid,driverid,driverslicenseid,documenttypeid,driversignatureid,accountsignatureid,userid,filename,filedate,driversignaturedate,accountsignaturedate,accountposition,uploaded,added,updated,deleted,oldcategoryid) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
 ------------------------------------------------------------------------------------------------------------------------
-[2024-06-14 11:33:1718379187]
+[2024-06-19 17:25:1718832316]
 [Error Number] 1054
-[Error Msg] Unknown column 'documentid' in 'where clause'
-[SQL] SELECT SQL_CALC_FOUND_ROWS * FROM documentmeta WHERE documentid=%s
-------------------------------------------------------------------------------------------------------------------------
-[2024-06-14 11:34:1718379257]
-[Error Number] 1054
-[Error Msg] Unknown column 'documentid' in 'where clause'
-[SQL] SELECT SQL_CALC_FOUND_ROWS * FROM documentmeta WHERE documentid=%s
-------------------------------------------------------------------------------------------------------------------------
-[2024-06-14 11:35:1718379346]
-[Error Number] 1054
-[Error Msg] Unknown column 'documentid' in 'where clause'
-[SQL] SELECT SQL_CALC_FOUND_ROWS * FROM documentmeta WHERE documentid=%s
-------------------------------------------------------------------------------------------------------------------------
-[2024-06-17 09:58:1718632695]
-[Error Number] 1054
-[Error Msg] Unknown column 'accountreviewdate' in 'where clause'
-[SQL] SELECT SQL_CALC_FOUND_ROWS a.*,b.typecode FROM driverdocuments a LEFT JOIN documenttypes b ON b.recordid = a.documenttypeid AND b.deleted IS NULL WHERE driverid=%s AND accountreviewdate is NULL AND a.deleted IS NULL
+[Error Msg] Unknown column 'driverlicenseid' in 'where clause'
+[SQL] SELECT SQL_CALC_FOUND_ROWS * FROM drivermvr WHERE driverlicenseid=%s AND deleted IS NULL ORDER BY returdate DESC
 ------------------------------------------------------------------------------------------------------------------------

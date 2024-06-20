@@ -24,7 +24,6 @@ font-size: 36px;
 align-items:center;
 justify-content: center;
 padding-right: 10px;
-
 `
 const SetupStepTextContainer = styled.div`
 flex:1;

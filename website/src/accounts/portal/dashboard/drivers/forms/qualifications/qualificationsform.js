@@ -13,6 +13,7 @@ import { DriverInquiryForm } from "./driverinquiryform"
 import { GoodFaithForm } from "./goodfaithform"
 import { faMinus } from "@fortawesome/free-solid-svg-icons"
 import { RoadTestForm } from "./roadtestform"
+import { RoadTestCertForm } from "./roadtestcertform"
 
 
 const QualContainer = styled.div`
@@ -195,6 +196,6 @@ export const QualificationsForm = () => {
         {form == 0 && <QualApplicationForm callback={handleFormCallback} />}
         {form == 1 && <DriverInquiryForm callback={handleFormCallback} />}
         {form == 2 && <GoodFaithForm callback={handleFormCallback} />}
-        {form == 3 && <RoadTestForm callback={handleFormCallback} />}
+        {form == 3 && <RoadTestForm callback={handleFormCallback} />}        
     </>)
 }

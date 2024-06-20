@@ -10,17 +10,30 @@ import { SignatureForm } from "../../../../../../classes/signatureform"
 import { checkDate, toSimpleDate } from "../../../../../../global/globals"
 import { useRestApi } from "../../../../../../global/hooks/apihook"
 import { statesArray, yesNoNaTypes } from "../../../../../../global/staticdata"
-import { v4 as uuidv4 } from 'uuid';
 
-export const RoadTestDocForm = ({ licenseid, callback }) => {
-    const { globalState, updateState } = useGlobalContext()
-    const { getValue, getError, handleChange, setFormErrors, serializeFormData, buildFormControls, formControls } = useFormHook("roadtest-form")
+export const RoadTestDocForm = ({ callback }) => {
+    const { globalState } = useGlobalContext()
+    const { getValue, getError, handleChange, setFormErrors, serializeFormData, buildFormControls, } = useFormHook("roadtest-form")
     const { driverRecord, setDriverRecord } = useContext(DriverContext)
     const [sigLookup, setSigLookup] = useState(false)
     const [signature, setSignature] = useState({ id: "", date: " ", signature: "", signaturename: "" })
     const { fetchData } = useRestApi()
     const handleSignatureLookup = () => setSigLookup(true)
-    const [rowHovered, setRowHovered] = useState()
+    const questionList = [
+        "The pre-trip inspection (As required by Sec. 392.7).",
+        "Coupling and uncoupling of combination units, if applicable.",
+        "Familiar with vehicle's controls",
+        "Placing the vehicle in operation",
+        "Use of vehicle's controls",
+        "Use of vehicle's emergency equipment",
+        "Operating the vehicle in traffic",
+        "Operating the vehicle while passing other vehicles",
+        "Turning the vehicle",
+        "Operating the vehicle while passing other vehicles",
+        "Braking, and slowing the vehicle by means other than braking.",
+        "Backing the vehicle",
+        "Parking the vehicle",
+    ]
 
     const signatureCallBack = (sig_rec) => {
         sig_rec && setSignature({
@@ -34,13 +47,7 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
 
     const validate = () => {
         let errors = {}
-        if (!checkDate(getValue("date"))) errors["date"] = "The Date Is Invalid."
-        if (!getValue("agency")) errors["agency"] = "The State Agency Name Is Required."
-        if (!getValue("address")) errors["address"] = "The Address Is Required."
-        if (!getValue("city")) errors["city"] = "The City Is Required."
-        if (!getValue("zipcode")) errors["zipcode"] = "The Zip Code Is Required."
-        if (!getValue("telephone")) errors["telephone"] = "The Telephone Is Required."
-        if (getValue("reason") == "other" && !getValue("otherreason")) errors["otherreason"] = "The Reason Is Required."
+        if (!checkDate(getValue("roadtestdate"))) errors["date"] = "The Date Is Invalid."
         if (!Object.keys(errors).length) {
             setFormErrors(errors)
             return false
@@ -48,13 +55,32 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
         return true
     }
 
+    const buildRoadTest = () => {
+        let roadString = ""
+        questionList.forEach((r, rndx) => {
+            const el = document.getElementsByName(`passfail${rndx}`)
+            let selected;
+            for (const radio of el)
+                if (radio.checked) selected = radio.value
+            if (selected) {
+                if (selected == "Pass") roadString += "P"
+                if (selected == "Fail") roadString += "F"
+                if (selected == "N/A") roadString += "A"
+            } else {
+                roadString += "N"
+            }
+        })
+        return roadString
+    }
+
     const handleSubmit = async () => {
         if (!validate()) {
             let data = serializeFormData()
+            data.append("roadtest", buildRoadTest())
             data.append("driverid", driverRecord["recordid"])
             data.append("userid", globalState.user.recordid)
             data.append("action", "create")
-            data.append("typecode", "20")
+            data.append("typecode", "33")
             data.append("esignatureid", signature.id)
             data.append("completedate", signature.date)
             const res = await fetchData("driverdocs", "post", data)
@@ -64,40 +90,21 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
     }
 
     const buildCheckFields = () => {
-        const questionList = [
-            "The pre-trip inspection (As required by Sec. 392.7).",
-            "Coupling and uncoupling of combination units, if applicable.",
-            "Familiar with vehicle's controls",
-            "Placing the vehicle in operation",
-            "Use of vehicle's controls",
-            "Use of vehicle's emergency equipment",
-            "Operating the vehicle in traffic",
-            "Operating the vehicle while passing other vehicles",
-            "Turning the vehicle",
-            "Operating the vehicle while passing other vehicles",
-            "Braking, and slowing the vehicle by means other than braking.",
-            "Backing the vehicle",
-            "Parking the vehicle",
-        ]
         return questionList.map((r, rndx) => {
-            return (<>
-                <FormFlexRowStyle style={{ flex: 1 }}>
-                    <div style={{ flex: 1 }}><FormTopLabel>{r}</FormTopLabel></div>
-                    <div style={{ width: "240px" }}><FormRadio name={`passfail${rndx}`} items={["Pass", "Fail", "N/A"]} /></div>
-                </FormFlexRowStyle>
-            </>)
+            return (
+                <React.Fragment key={rndx}>
+                    <FormFlexRowStyle style={{ flex: 1 }}>
+                        <div style={{ flex: 1 }}><FormTopLabel>{r}</FormTopLabel></div>
+                        <div style={{ width: "240px" }}><FormRadio name={`passfail${rndx}`} items={["Pass", "Fail", "N/A"]} /></div>
+                    </FormFlexRowStyle>
+                </React.Fragment>
+            )
         })
     }
 
     useEffect(() => {
         const defaults = {
-            testdate: toSimpleDate(new Date()),
-            stclasshazmat : "A",
-            ttclasshazmat : "A",
-            smclasshazmat : "A",
-            dtclasshazmat : "A",
-            busclasshazmat : "A",
-            otclasshazmat : "A"    
+            roadtestdate: toSimpleDate(new Date()),
         }
         buildFormControls(defaults)
     }, [])
@@ -163,9 +170,9 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
                     {buildCheckFields()}
                     <FormTopLabel style={{ paddingTop: "5px" }}>Other, Explain:</FormTopLabel>
                     <FormText
-                        id="other"
-                        value={getValue("other")}
-                        error={getError("other")}
+                        id="roadtestother"
+                        value={getValue("roadtestother")}
+                        error={getError("roadtestother")}
                         height="150px"
                         onChange={handleChange}
                     />
@@ -190,7 +197,7 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
                             <FormTopLabel>Hazmat</FormTopLabel>
                             <FormSelect
                                 id="stclasshazmat"
-                                options = {yesNoNaTypes}
+                                options={yesNoNaTypes}
                                 value={getValue("stclasshazmat")}
                                 error={getError("stclasshazmat")}
                                 onChange={handleChange}
@@ -211,7 +218,7 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
                         <div style={{ width: "150px" }}>
                             <FormInput value="Truck-Tractor" readOnly />
                         </div>
-                        <div style={{ flex: 1 }}>                            
+                        <div style={{ flex: 1 }}>
                             <FormInput
                                 id="ttclasstype"
                                 value={getValue("ttclasstype")}
@@ -219,16 +226,16 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
                                 onChange={handleChange}
                             />
                         </div>
-                        <div style={{ width: "100px" }}>                            
+                        <div style={{ width: "100px" }}>
                             <FormSelect
                                 id="ttclasshazmat"
-                                options = {yesNoNaTypes}
+                                options={yesNoNaTypes}
                                 value={getValue("ttclasshazmat")}
                                 error={getError("ttclasshazmat")}
                                 onChange={handleChange}
                             />
                         </div>
-                        <div style={{ width: "100px" }}>                            
+                        <div style={{ width: "100px" }}>
                             <FormInput
                                 id="ttclassmiles"
                                 mask="number"
@@ -242,7 +249,7 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
                         <div style={{ width: "150px" }}>
                             <FormInput value="Semi-Trailers" readOnly />
                         </div>
-                        <div style={{ flex: 1 }}>                            
+                        <div style={{ flex: 1 }}>
                             <FormInput
                                 id="smclasstype"
                                 value={getValue("smclasstype")}
@@ -250,16 +257,16 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
                                 onChange={handleChange}
                             />
                         </div>
-                        <div style={{ width: "100px" }}>                            
+                        <div style={{ width: "100px" }}>
                             <FormSelect
                                 id="smclasshazmat"
-                                options = {yesNoNaTypes}
+                                options={yesNoNaTypes}
                                 value={getValue("smclasshazmat")}
                                 error={getError("smclasshazmat")}
                                 onChange={handleChange}
                             />
                         </div>
-                        <div style={{ width: "100px" }}>                            
+                        <div style={{ width: "100px" }}>
                             <FormInput
                                 id="smclassmiles"
                                 mask="number"
@@ -273,7 +280,7 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
                         <div style={{ width: "150px" }}>
                             <FormInput value="Doubles / Triples" readOnly />
                         </div>
-                        <div style={{ flex: 1 }}>                            
+                        <div style={{ flex: 1 }}>
                             <FormInput
                                 id="dtclasstype"
                                 value={getValue("dtclasstype")}
@@ -281,16 +288,16 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
                                 onChange={handleChange}
                             />
                         </div>
-                        <div style={{ width: "100px" }}>                            
+                        <div style={{ width: "100px" }}>
                             <FormSelect
                                 id="dtclasshazmat"
-                                options = {yesNoNaTypes}
+                                options={yesNoNaTypes}
                                 value={getValue("dtclasshazmat")}
                                 error={getError("dtclasshazmat")}
                                 onChange={handleChange}
                             />
                         </div>
-                        <div style={{ width: "100px" }}>                            
+                        <div style={{ width: "100px" }}>
                             <FormInput
                                 id="dtclassmiles"
                                 mask="number"
@@ -299,12 +306,12 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
                                 onChange={handleChange}
                             />
                         </div>
-                    </FormFlexRowStyle>                    
+                    </FormFlexRowStyle>
                     <FormFlexRowStyle>
                         <div style={{ width: "150px" }}>
                             <FormInput value="Bus" readOnly />
                         </div>
-                        <div style={{ flex: 1 }}>                            
+                        <div style={{ flex: 1 }}>
                             <FormInput
                                 id="busclasstype"
                                 value={getValue("busclasstype")}
@@ -312,16 +319,16 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
                                 onChange={handleChange}
                             />
                         </div>
-                        <div style={{ width: "100px" }}>                            
+                        <div style={{ width: "100px" }}>
                             <FormSelect
                                 id="busclasshazmat"
-                                options = {yesNoNaTypes}
+                                options={yesNoNaTypes}
                                 value={getValue("busclasshazmat")}
                                 error={getError("busclasshazmat")}
                                 onChange={handleChange}
                             />
                         </div>
-                        <div style={{ width: "100px" }}>                            
+                        <div style={{ width: "100px" }}>
                             <FormInput
                                 id="busclassmiles"
                                 mask="number"
@@ -335,7 +342,7 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
                         <div style={{ width: "150px" }}>
                             <FormInput value="Other" readOnly />
                         </div>
-                        <div style={{ flex: 1 }}>                            
+                        <div style={{ flex: 1 }}>
                             <FormInput
                                 id="otclasstype"
                                 value={getValue("otclasstype")}
@@ -343,16 +350,16 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
                                 onChange={handleChange}
                             />
                         </div>
-                        <div style={{ width: "100px" }}>                            
+                        <div style={{ width: "100px" }}>
                             <FormSelect
                                 id="otclasshazmat"
-                                options = {yesNoNaTypes}
+                                options={yesNoNaTypes}
                                 value={getValue("otclasshazmat")}
                                 error={getError("otclasshazmat")}
                                 onChange={handleChange}
                             />
                         </div>
-                        <div style={{ width: "100px" }}>                            
+                        <div style={{ width: "100px" }}>
                             <FormInput
                                 id="otclassmiles"
                                 mask="number"
@@ -361,7 +368,18 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
                                 onChange={handleChange}
                             />
                         </div>
-                    </FormFlexRowStyle>                                        
+                    </FormFlexRowStyle>
+                </FormSection>
+                <FormSection>
+                    <div style={{ padding: "10px 0px", fontWeight: 700, color: "#164398" }}>Additional Remarks</div>
+                    <FormTopLabel>Please Enter Additional Information</FormTopLabel>
+                    <FormText
+                        id="roadtestremarks"
+                        height="100px"
+                        value={getValue("roadtestremarks")}
+                        error={getError("roadtestremarks")}
+                        onChange={handleChange}
+                    />
                 </FormSection>
                 <FormSection style={{ borderBottom: "none" }}>
                     <div style={{ padding: "10px 0px", fontWeight: 700, color: "#164398" }}>Conducted By</div>
@@ -385,9 +403,10 @@ export const RoadTestDocForm = ({ licenseid, callback }) => {
                         <div style={{ width: "200px" }}>
                             <FormTopLabel>Road Test Date</FormTopLabel>
                             <FormDate
-                                id="testdate"
-                                value={getValue("testdate")}
-                                error={getError("testdate")} disabled
+                                id="roadtestdate"
+                                value={getValue("roadtestdate") || " "}
+                                error={getError("roadtestdate")}
+                                disabled
                                 onChange={handleChange}
                             />
                         </div>

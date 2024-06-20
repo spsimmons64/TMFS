@@ -10,6 +10,7 @@ import { ModalFormFooter } from "../components/global/forms/forms"
 
 export const SignatureForm = ({ esignature, entity, resourceid, doctype, callback }) => {
     const { globalState, updateState } = useGlobalContext()
+    const [ lookupMode, setLookupMode ] = useState(true)
     const { handleChange, getValue, getError, sendFormData, setFormErrors } = useFormHook()
     const validate = () => {
         let errors = {}
@@ -29,6 +30,7 @@ export const SignatureForm = ({ esignature, entity, resourceid, doctype, callbac
                 errors["cbirthdate"] = "Birth Dates Don't Match!"
             }
         }
+        if (!lookupMode && !getValue("entityname")) errors["entityname"] = "Please Enter Your Signature Name"
         if (Object.keys(errors).length) {
             setFormErrors(errors)
             return false
@@ -37,29 +39,33 @@ export const SignatureForm = ({ esignature, entity, resourceid, doctype, callbac
     }
 
     const handleSubmit = async () => {
-        if (!Object.keys(esignature).length){        
+        if (!Object.keys(esignature).length) {
             if (validate()) {
                 var data = new FormData()
+                data.append("action", lookupMode ? "lookup" : "")
                 data.append("socialsecurity", getValue("socialsecurity"))
                 data.append("csocialsecurity", getValue("csocialsecurity"))
                 data.append("birthdate", getValue("birthdate"))
                 data.append("cbirthdate", getValue("cbirthdate"))
-                data.append("entity", entity)
                 data.append("entityname", getValue("entityname"))
                 data.append("resourceid", resourceid)
-                const response = await sendFormData("POST", data, "signatures/create");
-                if (entity === "user") {
-                    let holdstate = { ...globalState }
-                    holdstate.user.esignature = response.data
-                    updateState(holdstate)
-                }
-                response.status === 200 && callback(response.data)
+                const response = await sendFormData("POST", data, "signatures");                
+                if(response.status === 200){
+                    if (entity === "user") {
+                        let holdstate = { ...globalState }
+                        holdstate.user.esignature = response.data
+                        updateState(holdstate)
+                    }
+                    callback(response.data)
+                }                                 
+                setLookupMode(false)
             }
         } else {
             esignature.signaturedate = toSimpleDate(new Date())
             callback(esignature)
-        }
-    }
+        }        
+    }    
+
     return (
         <ModalCard style={{ padding: "10px", width: "730px", zIndex: 2000 }} id="signature-form">
             <div style={{ borderBottom: "1px dotted #B6B6B6", fontSize: "24px", fontWeight: 700, padding: "10px 0px 10px 0px" }}>Document Signature</div>
@@ -76,6 +82,7 @@ export const SignatureForm = ({ esignature, entity, resourceid, doctype, callbac
                             mask="ssn"
                             value={getValue("socialsecurity")}
                             error={getError("socialsecurity")}
+                            disabled={!lookupMode}
                             onChange={handleChange}
                             autoFocus
                         />
@@ -87,6 +94,7 @@ export const SignatureForm = ({ esignature, entity, resourceid, doctype, callbac
                             mask="ssn"
                             value={getValue("csocialsecurity")}
                             error={getError("csocialsecurity")}
+                            disabled={!lookupMode}
                             onChange={handleChange}
                         />
                     </div>
@@ -98,6 +106,7 @@ export const SignatureForm = ({ esignature, entity, resourceid, doctype, callbac
                             id="birthdate"
                             value={getValue("birthdate")}
                             error={getError("birthdate")}
+                            disabled={!lookupMode}
                             onChange={handleChange}
                         />
                     </div>
@@ -107,23 +116,27 @@ export const SignatureForm = ({ esignature, entity, resourceid, doctype, callbac
                             id="cbirthdate"
                             value={getValue("cbirthdate")}
                             error={getError("cbirthdate")}
+                            disabled={!lookupMode}
                             onChange={handleChange}
                         />
                     </div>
                 </FormFlexRowStyle>
-                <div style={{ fontSize: "24px", fontWeight: 700, padding: "10px 0px 20px 0px" }}>Create Your E-Signature</div>
-                <div style={{ marginBottom: "20px" }}>
-                    To create your E-Signature, please enter your name below <u>as you would like it to appear on your signature.</u>
-                    You only need to create one E-Signature for use on the entire system.
-                </div>
-                <FormTopLabel>First And Last Name {`(Please use proper casing).`}</FormTopLabel>
-                <FormInput
-                    id="entityname"
-                    mask="text"
-                    value={getValue("entityname")}
-                    error={getError("entityname")}
-                    onChange={handleChange}
-                />
+                {!lookupMode && <>
+                    <div style={{ fontSize: "24px", fontWeight: 700, padding: "10px 0px 20px 0px" }}>Create Your E-Signature</div>
+                    <div style={{ marginBottom: "20px" }}>
+                        To create your E-Signature, please enter your name below <u>as you would like it to appear on your signature.</u>
+                        You only need to create one E-Signature for use on the entire system.
+                    </div>
+                    <FormTopLabel>First And Last Name {`(Please use proper casing).`}</FormTopLabel>
+                    <FormInput
+                        id="entityname"
+                        mask="text"
+                        value={getValue("entityname")}
+                        error={getError("entityname")}
+                        onChange={handleChange}
+                        autoFocus
+                    />
+                </>}
             </>}
             <ModalFormFooter>
                 <FormFlexRowStyle style={{ justifyContent: "flex-end" }}>
@@ -133,7 +146,6 @@ export const SignatureForm = ({ esignature, entity, resourceid, doctype, callbac
                             onClick={handleSubmit}>Sign Document
                         </FormButton>
                     </div>
-
                     <div><FormButton style={{ width: "130px" }} onClick={() => callback(false)}>Cancel</FormButton></div>
                 </FormFlexRowStyle>
             </ModalFormFooter>

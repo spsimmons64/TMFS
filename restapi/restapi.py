@@ -27,6 +27,7 @@ from docreviews import DocReviews
 from driverflags import DriverFlags
 from esignatures import ESignatures
 from driverdocuments import DriverDocuments
+from emailqueue import EmailQueue
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile("config.py")
@@ -45,8 +46,8 @@ api.add_resource(FetchNoCors, "/fetchobj/account/calculate",endpoint="calc-accou
 api.add_resource(FetchNoCors, "/fetchobj/account/adpolicy",endpoint="fetch-ad-policy")
 api.add_resource(FetchNoCors, "/fetchobj/account/gwpolicy",endpoint="fetch-gw-policy")
 api.add_resource(FetchNoCors, "/fetchobj/driver/application",endpoint="driver-application")
-api.add_resource(ESignatures, "/signatures/lookup",endpoint="signature-lookup")
-api.add_resource(ESignatures, "/signatures/create",endpoint="signature-create")
+api.add_resource(ESignatures, "/signatures")
+api.add_resource(EmailQueue, "/sendrequest")
 api.add_resource(Combos, "/combos/feetypes", endpoint="combo-feetypes")
 api.add_resource(Combos, "/combos/resellers", endpoint="combo-resellers")
 api.add_resource(Combos, "/combos/accounts", endpoint="combo-accounts")

@@ -40,17 +40,18 @@ export const GoodFaithDocForm = ({ licenseid, callback }) => {
 
     const validate = () => {
         let errors = {}
-        if (!checkDate(getValue("date"))) errors["date"] = "The Date Is Invalid."
-        if (!getValue("agency")) errors["agency"] = "The State Agency Name Is Required."
-        if (!getValue("address")) errors["address"] = "The Address Is Required."
-        if (!getValue("city")) errors["city"] = "The City Is Required."
-        if (!getValue("zipcode")) errors["zipcode"] = "The Zip Code Is Required."
-        if (!getValue("telephone")) errors["telephone"] = "The Telephone Is Required."
-        if (getValue("reason")=="other" && !getValue("otherreason")) errors["otherreason"]= "The Reason Is Required."
+        if (!checkDate(getValue("agencydate"))) errors["agencydate"] = "The Date Is Invalid."
+        if (!getValue("agencyname")) errors["agencyname"] = "The State Agency Name Is Required."
+        if (!getValue("agencyaddress")) errors["agencyaddress"] = "The Address Is Required."
+        if (!getValue("agencycity")) errors["agencycity"] = "The City Is Required."
+        if (!getValue("agencyzipcode")) errors["agencyzipcode"] = "The Zip Code Is Required."
+        if (!getValue("agencytelephone")) errors["agencytelephone"] = "The Telephone Is Required."
+        if (getValue("agencyreason")=="other" && !getValue("otherreason")) errors["otherreason"]= "The Reason Is Required."
         if (!Object.keys(errors).length) {
             setFormErrors(errors)
             return false
         }
+        console.log(errors)
         return true
     }
 
@@ -79,10 +80,10 @@ export const GoodFaithDocForm = ({ licenseid, callback }) => {
             if (cty) rec["country"] = cty.text
         }
         const defaults = {
-            state: state.value || "",
-            country: country.value || "",
+            agencystate: state.value || "",
+            agencycountry: country.value || "",
             reason: "Agency Refused To Release Information",
-            date: toSimpleDate(new Date())
+            agencydate: toSimpleDate(new Date())
         }
         buildFormControls(defaults)
         rec && setLicense(rec)
@@ -133,10 +134,10 @@ export const GoodFaithDocForm = ({ licenseid, callback }) => {
                         <div style={{ flex: 1 }}>
                             <FormTopLabel>State Agency Name</FormTopLabel>
                             <FormInput
-                                id="agency"
+                                id="agencyname"
                                 mask="text"
-                                value={getValue("agency")}
-                                error={getError("agency")}
+                                value={getValue("agencyname")}
+                                error={getError("agencyname")}
                                 onChange={handleChange}
                                 autoFocus
                             />
@@ -144,39 +145,39 @@ export const GoodFaithDocForm = ({ licenseid, callback }) => {
                     </FormFlexRowStyle>
                     <FormTopLabel>Address</FormTopLabel>
                     <FormInput
-                        id="address"
+                        id="agencyaddress"
                         mask="text"
-                        value={getValue("address")}
-                        error={getError("address")}
+                        value={getValue("agencyaddress")}
+                        error={getError("agencyaddress")}
                         onChange={handleChange}
                     />
                     <FormFlexRowStyle>
                         <div style={{ flex: 1 }}>
                             <FormTopLabel>City</FormTopLabel>
                             <FormInput
-                                id="city"
+                                id="agencycity"
                                 mask="text"
-                                value={getValue("city")}
-                                error={getError("city")}
+                                value={getValue("agencycity")}
+                                error={getError("agencycity")}
                                 onChange={handleChange}
                             />
                         </div>
                         <div style={{ width: "220px" }}>
                             <FormTopLabel>State</FormTopLabel>
                             <FormSelect
-                                id="state"
+                                id="agencystate"
                                 options={statesArray}
-                                value={getValue("state")}
-                                error={getError("state")}
+                                value={getValue("agencystate")}
+                                error={getError("agencystate")}
                                 onChange={handleChange}
                             />
                         </div>
                         <div style={{ width: "220px" }}>
                             <FormTopLabel>Zip Code</FormTopLabel>
                             <FormInput
-                                id="zipcode"
-                                value={getValue("zipcode")}
-                                error={getError("zipcode")}
+                                id="agencyzipcode"
+                                value={getValue("agencyzipcode")}
+                                error={getError("agencyzipcode")}
                                 onChange={handleChange}
                             />
                         </div>
@@ -185,30 +186,30 @@ export const GoodFaithDocForm = ({ licenseid, callback }) => {
                         <div style={{ flex: 1 }}>
                             <FormTopLabel>Country</FormTopLabel>
                             <FormSelect
-                                id="country"
+                                id="agencycountry"
                                 options={countryTypes}
-                                value={getValue("country")}
-                                error={getError("country")}
+                                value={getValue("agencycountry")}
+                                error={getError("agencycountry")}
                                 onChange={handleChange}
                             />
                         </div>
                         <div style={{ width: "220px" }}>
                             <FormTopLabel>Telephone</FormTopLabel>
                             <FormInput
-                                id="telephone"
+                                id="agencytelephone"
                                 mask="telephone"
-                                value={getValue("telephone")}
-                                error={getError("telephone")}
+                                value={getValue("agencytelephone")}
+                                error={getError("agencytelephone")}
                                 onChange={handleChange}
                             />
                         </div>
                         <div style={{ width: "220px" }}>
                             <FormTopLabel>Fax Number</FormTopLabel>
                             <FormInput
-                                id="fax"
+                                id="agencyfax"
                                 mask="telephone"
-                                value={getValue("fax")}
-                                error={getError("fax")}
+                                value={getValue("agencyfax")}
+                                error={getError("agencyfax")}
                                 onChange={handleChange}
                             />
                         </div>
@@ -220,19 +221,19 @@ export const GoodFaithDocForm = ({ licenseid, callback }) => {
                         <div style={{ width: "200px" }}>
                             <FormTopLabel>Date</FormTopLabel>
                             <FormDate
-                                id="date"
-                                value={getValue("date") || " "}
-                                error={getError("date")}
+                                id="agencydate"
+                                value={getValue("agencydate") || " "}
+                                error={getError("agencydate")}
                                 onChange={handleChange}
                             />
                         </div>
                         <div style={{ flex: 1 }}>
                             <FormTopLabel>Reason Not Conducted</FormTopLabel>
                             <FormSelect
-                                id="reason"
+                                id="agencyreason"
                                 options={reasons}
-                                value={getValue("reason")}
-                                error={getError("reason")}
+                                value={getValue("agencyreason")}
+                                error={getError("agencyreason")}
                                 onChange={handleChange}
                             />
                         </div>

@@ -5,7 +5,7 @@ import { countryTypes, dlClassTypes, statesArray } from "../../../global/staticd
 import { FormButton } from "../../../components/portals/buttonstyle"
 import { v4 as uuidv4 } from 'uuid';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons"
+import { faExclamation, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons"
 import { checkDate } from "../../../global/globals"
 import { useMultiFormContext } from "../../../global/contexts/multiformcontext"
 import { FormSection, ModalForm, ModalFormBody, ModalFormFooter, ModalFormHeader } from "../../../components/global/forms/forms"
@@ -93,8 +93,8 @@ export const LicenseForm = ({ record, callback }) => {
                 <FormSection style={{ backgroundColor: "#FFF8C4", border: "1px dotted #F2C779", borderTop: "none" }}>
                     <FormFlexRowStyle>
                         <div style={{ padding: "0px 10px", color: "#164398", fontSize: "20px" }}>
-                            <CircleBack color="gold" size="60px" style={{ fontSize: "34px" }}>
-                                <FontAwesomeIcon icon={faTriangleExclamation} color="#FFCE44" />
+                            <CircleBack color="gold" size="60px" style={{ fontSize: "34px",paddingLeft:"2px" }}>
+                                <FontAwesomeIcon icon={faExclamation} color="#FFFFFF" />
                             </CircleBack>
                         </div>
                         <div style={{ flex: 1, paddingRight: "5px", textAlign: "justify" }}>

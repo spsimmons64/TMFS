@@ -155,7 +155,7 @@ def generate_report(licenseid,documentid):
 
     app_section_hdr(pdf,"STATE AGENCY CONTACTED")
     app_style_cell(pdf,4,"Agency Name",met_rec["agencyname"])
-    app_style_cell(pdf,1.75,"Telephone",format_telephone(met_rec["agencyphone"]))    
+    app_style_cell(pdf,1.75,"Telephone",format_telephone(met_rec["agencytelephone"]))    
     app_style_cell(pdf,1.75,"Fax",format_telephone(met_rec["agencyfax"]),1)
     app_style_cell(pdf,7.5,"Address",met_rec["agencyaddress"],1)
     found_state = next((state["text"] for state in states if state["value"] == met_rec["agencystate"]), None)            

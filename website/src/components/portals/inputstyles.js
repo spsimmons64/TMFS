@@ -260,7 +260,7 @@ export const FormInput = (props) => {
 }
 
 export const FormDate = (props) => {
-    const { id, height, label, labelwidth, onFocus, autoComplete, mask, error, hideerror, ...nprops } = props;
+    const { id, height, label, labelwidth, onFocus, autoComplete,value, mask, error, hideerror, ...nprops } = props;
     const useFocus = (e) => {
         e.target.select()
         onFocus && onFocus(e)
@@ -273,6 +273,7 @@ export const FormDate = (props) => {
                     <InputDateStyle
                         {...nprops}
                         id={id}
+                        value = {value || " "}
                         type="date"
                         autoComplete={autoComplete || "off"}
                         onFocus={useFocus}
@@ -478,10 +479,10 @@ export const FormRadio = (props) => {
         <FormRadioWrapper hideerror="true" direction={dir}>
             {items.map(r => {
                 return (
-                    <div style={{ flex: 1 }}>
+                    <div style={{ flex: 1 }} key={r}>
                         <FormRadioContainer>
                             <FormRadioLabel>
-                                <FormRadioStyle type="radio" name={name} {...newProps} />{r}
+                                <FormRadioStyle type="radio" name={name} value={r} {...newProps} />{r}
                             </FormRadioLabel>
                         </FormRadioContainer>
                     </div>

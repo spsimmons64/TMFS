@@ -24,18 +24,17 @@ class EmailQueue(Resource):
                 return ";".join(new_list)
         return False
     
-    def addQueue(self,emailtype,resourceid,attachments=[]):
+    def addQueue(self,emailtype,resourceid,emailto="",emailsubject="",attachments=[]):
         sender = ""
-        recipient = ""
+        recipient = "" if not emailto else emailto
         cc = ""
         bcc = ""
-        subject = ""
+        subject = "" if not emailsubject else emailsubject
         entity = ""
         queue_record = {}        
         mas_set,mas_cnt = Database().query("SELECT * FROM resellers WHERE ismaster=1 AND deleted IS NULL")
         if mas_cnt:
-            mas_rec = mas_set[0]
-            bcc = self.__format_email_address(mas_rec["companyname"],mas_rec["recordid"],'support')            
+            mas_rec = mas_set[0]            
             match emailtype:
                 case "drivers_license":                     
                     drv_rec = Database().fetch("drivers",resourceid)                   
@@ -43,7 +42,9 @@ class EmailQueue(Resource):
                     res_rec = Database().fetch("resellers",acc_rec["resellerid"])
                     if drv_rec and acc_rec and res_rec:                                                
                         sender = self.__format_email_address(res_rec["companyname"],res_rec["recordid"],'support')      
-                        cc = sender      
+                        cc = sender   
+                        if mas_rec["recordid"] != res_rec["recordid"]:                        
+                            bcc = self.__format_email_address(mas_rec["companyname"],mas_rec["recordid"])                              
                         recipient = self.__format_email_address(acc_rec["companyname"],acc_rec["recordid"],"support")    
                         subject = f'License Forfeiture Documents Uploaded By {drv_rec["firstname"]} {drv_rec["lastname"]}'  
                         entity = "driver"    
@@ -54,7 +55,9 @@ class EmailQueue(Resource):
                     res_rec = Database().fetch("resellers",acc_rec["resellerid"])
                     if drv_rec and acc_rec and res_rec:                                                
                         sender = self.__format_email_address(res_rec["companyname"],res_rec["recordid"],"support")      
-                        cc = sender      
+                        cc = sender                          
+                        if mas_rec["recordid"] != res_rec["recordid"]:                        
+                            bcc = self.__format_email_address(mas_rec["companyname"],mas_rec["recordid"])                              
                         recipient = self.__format_email_address(acc_rec["companyname"],acc_rec["recordid"],"support")    
                         subject = f'Copy Of Driver\'s License Uploaded By {drv_rec["firstname"]} {drv_rec["lastname"]}'  
                         entity = "driver"  
@@ -66,6 +69,8 @@ class EmailQueue(Resource):
                     if drv_rec and acc_rec and res_rec:                                                
                         sender = self.__format_email_address(res_rec["companyname"],res_rec["recordid"],"support")      
                         cc = sender      
+                        if mas_rec["recordid"] != res_rec["recordid"]:                        
+                            bcc = self.__format_email_address(mas_rec["companyname"],mas_rec["recordid"])                              
                         recipient = self.__format_email_address(acc_rec["companyname"],acc_rec["recordid"],"support")    
                         subject = f'Copy Of Driver\'s Medical Certificate Uploaded By {drv_rec["firstname"]} {drv_rec["lastname"]}'  
                         entity = "driver"        
@@ -76,7 +81,9 @@ class EmailQueue(Resource):
                     res_rec = Database().fetch("resellers",acc_rec["resellerid"])
                     if drv_rec and acc_rec and res_rec:                                                
                         sender = self.__format_email_address(res_rec["companyname"],res_rec["recordid"],"support")      
-                        cc = sender      
+                        cc = sender
+                        if mas_rec["recordid"] != res_rec["recordid"]:                        
+                            bcc = self.__format_email_address(mas_rec["companyname"],mas_rec["recordid"])                            
                         recipient = self.__format_email_address(acc_rec["companyname"],acc_rec["recordid"],"support")    
                         subject = f'Copy Of Driver\'s License Uploaded By {drv_rec["firstname"]} {drv_rec["lastname"]}'  
                         entity = "driver"  
@@ -87,8 +94,9 @@ class EmailQueue(Resource):
                     res_rec = Database().fetch("resellers",acc_rec["resellerid"])
                     if drv_rec and acc_rec and res_rec:                           
                         sender = self.__format_email_address(acc_rec["companyname"],acc_rec["recordid"],"support")                              
-                        if mas_rec["recordid"] != res_rec["recordid"]:
-                            cc = self.__format_email_address(res_rec["companyname"],res_rec["recordid"])                              
+                        cc = self.__format_email_address(res_rec["companyname"],res_rec["recordid"],"support")                                                           
+                        if mas_rec["recordid"] != res_rec["recordid"]:                        
+                            bcc = self.__format_email_address(mas_rec["companyname"],mas_rec["recordid"])                              
                         recipient = self.__format_email_address(f'{drv_rec["firstname"]} {drv_rec["lastname"]}',drv_rec["recordid"],"driver")                        
                         subject = f'{acc_rec["companyname"]} Has Requested Corrections To Your Application'  
                         entity = "driver"     
@@ -99,8 +107,9 @@ class EmailQueue(Resource):
                     res_rec = Database().fetch("resellers",acc_rec["resellerid"])
                     if drv_rec and acc_rec and res_rec:                           
                         sender = self.__format_email_address(acc_rec["companyname"],acc_rec["recordid"],"support")                              
-                        if mas_rec["recordid"] != res_rec["recordid"]:
-                            cc = self.__format_email_address(res_rec["companyname"],res_rec["recordid"])                              
+                        cc = self.__format_email_address(res_rec["companyname"],res_rec["recordid"],"support")                                                           
+                        if mas_rec["recordid"] != res_rec["recordid"]:                        
+                            bcc = self.__format_email_address(mas_rec["companyname"],mas_rec["recordid"])                              
                         recipient = self.__format_email_address(f'{drv_rec["firstname"]} {drv_rec["lastname"]}',drv_rec["recordid"],"driver")                        
                         subject = f'{acc_rec["companyname"]} Has Requested Corrections To Your Application'  
                         entity = "driver"        
@@ -111,8 +120,9 @@ class EmailQueue(Resource):
                     res_rec = Database().fetch("resellers",acc_rec["resellerid"])
                     if drv_rec and acc_rec and res_rec:                           
                         sender = self.__format_email_address(acc_rec["companyname"],acc_rec["recordid"],"support")                              
-                        if mas_rec["recordid"] != res_rec["recordid"]:
-                            cc = self.__format_email_address(res_rec["companyname"],res_rec["recordid"])                              
+                        cc = self.__format_email_address(res_rec["companyname"],res_rec["recordid"],"support")                                                            
+                        if mas_rec["recordid"] != res_rec["recordid"]:                        
+                            bcc = self.__format_email_address(mas_rec["companyname"],mas_rec["recordid"])                              
                         recipient = self.__format_email_address(f'{drv_rec["firstname"]} {drv_rec["lastname"]}',drv_rec["recordid"],"driver")                        
                         subject = f'Your Employment Application With {acc_rec["companyname"]}'  
                         entity = "driver"        
@@ -123,8 +133,9 @@ class EmailQueue(Resource):
                     res_rec = Database().fetch("resellers",acc_rec["resellerid"])
                     if drv_rec and acc_rec and res_rec:                           
                         sender = self.__format_email_address(acc_rec["companyname"],acc_rec["recordid"],"support")                              
-                        if mas_rec["recordid"] != res_rec["recordid"]:
-                            cc = self.__format_email_address(res_rec["companyname"],res_rec["recordid"])                              
+                        cc = self.__format_email_address(res_rec["companyname"],res_rec["recordid"],"support")                                                            
+                        if mas_rec["recordid"] != res_rec["recordid"]:                        
+                            bcc = self.__format_email_address(mas_rec["companyname"],mas_rec["recordid"])                              
                         recipient = self.__format_email_address(f'{drv_rec["firstname"]} {drv_rec["lastname"]}',drv_rec["recordid"],"driver")                        
                         subject = f'{acc_rec["companyname"]} General/Alcohol & Drug Worplace Policies'  
                         entity = "driver"     
@@ -135,8 +146,9 @@ class EmailQueue(Resource):
                     res_rec = Database().fetch("resellers",acc_rec["resellerid"])
                     if drv_rec and acc_rec and res_rec:                           
                         sender = self.__format_email_address(acc_rec["companyname"],acc_rec["recordid"],"support")                              
-                        if mas_rec["recordid"] != res_rec["recordid"]:
-                            cc = self.__format_email_address(res_rec["companyname"],res_rec["recordid"])                              
+                        cc = self.__format_email_address(res_rec["companyname"],res_rec["recordid"],"support")                              
+                        if mas_rec["recordid"] != res_rec["recordid"]:                        
+                            bcc = self.__format_email_address(mas_rec["companyname"],mas_rec["recordid"])                              
                         recipient = self.__format_email_address(f'{drv_rec["firstname"]} {drv_rec["lastname"]}',drv_rec["recordid"],"driver")                        
                         subject = f'{acc_rec["companyname"]} Requests A Copy Of Your Driver\'s License'                          
                         entity = "driver"     
@@ -147,8 +159,9 @@ class EmailQueue(Resource):
                     res_rec = Database().fetch("resellers",acc_rec["resellerid"])
                     if drv_rec and acc_rec and res_rec:                           
                         sender = self.__format_email_address(acc_rec["companyname"],acc_rec["recordid"],"support")                              
-                        if mas_rec["recordid"] != res_rec["recordid"]:
-                            cc = self.__format_email_address(res_rec["companyname"],res_rec["recordid"])                              
+                        cc = self.__format_email_address(res_rec["companyname"],res_rec["recordid"],"support")                              
+                        if mas_rec["recordid"] != res_rec["recordid"]:                        
+                            bcc = self.__format_email_address(mas_rec["companyname"],mas_rec["recordid"])                              
                         recipient = self.__format_email_address(f'{drv_rec["firstname"]} {drv_rec["lastname"]}',drv_rec["recordid"],"driver")                        
                         subject = f'{acc_rec["companyname"]} Requests A Copy Of Your Medical Certificate'                          
                         entity = "driver"   
@@ -159,10 +172,22 @@ class EmailQueue(Resource):
                     res_rec = Database().fetch("resellers",acc_rec["resellerid"])
                     if drv_rec and acc_rec and res_rec:                           
                         sender = self.__format_email_address(acc_rec["companyname"],acc_rec["recordid"],"support")                              
-                        if mas_rec["recordid"] != res_rec["recordid"]:
-                            cc = self.__format_email_address(res_rec["companyname"],res_rec["recordid"])                              
+                        cc = self.__format_email_address(res_rec["companyname"],res_rec["recordid"],"support")                              
+                        if mas_rec["recordid"] != res_rec["recordid"]:                        
+                            bcc = self.__format_email_address(mas_rec["companyname"],mas_rec["recordid"])                              
                         recipient = self.__format_email_address(f'{drv_rec["firstname"]} {drv_rec["lastname"]}',drv_rec["recordid"],"driver")                        
                         subject = f'{acc_rec["companyname"]} Requests Corrections To Your Employment History'                          
+                        entity = "driver"     
+
+                case "road_test":                         
+                    drv_rec = Database().fetch("drivers",resourceid)                                   
+                    acc_rec = Database().fetch("accounts",drv_rec["accountid"])
+                    res_rec = Database().fetch("resellers",acc_rec["resellerid"])                                    
+                    if drv_rec and acc_rec and res_rec:                           
+                        sender = self.__format_email_address(acc_rec["companyname"],acc_rec["recordid"],"support")                                                      
+                        cc = self.__format_email_address(res_rec["companyname"],res_rec["recordid"],"support")                                                      
+                        if mas_rec["recordid"] != res_rec["recordid"]:                                                    
+                            bcc = self.__format_email_address(mas_rec["companyname"],mas_rec["recordid"])                              
                         entity = "driver"     
 
         queue_record["reciptienttype"] = entity
@@ -179,3 +204,13 @@ class EmailQueue(Resource):
             emq_rec.update(queue_record)
             return Database().insert("emailqueue",emq_rec)
         return False
+    
+    def post(self):
+        emailtype = ""
+        formatted_email = f'{self.payload["recipname"]}<{self.payload["emailaddress"]}>'
+        match self.payload["typecode"]:            
+            case "33": emailtype = "road_test"
+        if self.addQueue(emailtype=emailtype,resourceid=self.payload["driverid"],emailto=formatted_email,emailsubject=self.payload["subject"]):
+            return build_response(status=200,message="The Email Request Has Been Sent.")
+        else:
+            return build_response(status=400,message="Your Email Request Could Not Be Sent. Contact Support.")
