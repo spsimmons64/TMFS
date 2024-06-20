@@ -1,10 +1,10 @@
-import { FormTopLabel } from "../../../../../components/portals/formstyles"
-import { FormButton } from "../../../../../components/portals/buttonstyle"
-import { useFormHook } from "../../../../../global/hooks/formhook"
 import { useContext, useEffect } from "react"
-import { FormInput } from "../../../../../components/portals/inputstyles"
-import { DriverContext } from "../contexts/drivercontext"
-import { ModalForm, ModalFormBody, ModalFormFooter, ModalFormHeader } from "../../../../../components/global/forms/forms"
+import { useFormHook } from "../../global/hooks/formhook"
+import { DriverContext } from "../portal/dashboard/drivers/contexts/drivercontext"
+import { FormSection, ModalForm, ModalFormBody, ModalFormFooter, ModalFormHeader } from "../../components/global/forms/forms"
+import { FormInput } from "../../components/portals/inputstyles"
+import { FormButton } from "../../components/portals/buttonstyle"
+import { FormTopLabel } from "../../components/portals/formstyles"
 
 export const FlagDriverForm = ({ callback }) => {
     const { driverRecord, setDriverRecord } = useContext(DriverContext)
@@ -40,18 +40,20 @@ export const FlagDriverForm = ({ callback }) => {
         <ModalForm width="500px">
             <ModalFormHeader title="Flag This Driver" busy={formState.busy} />
             <ModalFormBody id={formState.id} busy={formState.busy}>
-                <div style={{ width: "100%", textAlign: "center", padding: "10px 0px" }}>
+                <FormSection style={{paddingTop:"0px"}}>
                     You are about to flag this driver, please provide the reason.
-                </div>
-                <FormTopLabel>Flag Reason</FormTopLabel>
-                <FormInput
-                    id="flagreason"
-                    mask="text"
-                    value={getValue("flagreason")}
-                    error={getError("flagreason")}
-                    onChange={handleChange}
-                    autoFocus
-                />
+                </FormSection>
+                <FormSection style={{borderBottom:"none"}}>
+                    <FormTopLabel>Flag Reason</FormTopLabel>
+                    <FormInput
+                        id="flagreason"
+                        mask="text"
+                        value={getValue("flagreason")}
+                        error={getError("flagreason")}
+                        onChange={handleChange}
+                        autoFocus
+                    />
+                </FormSection>
             </ModalFormBody>
             <ModalFormFooter style={{ justifyContent: "flex-end" }}>
                 <div><FormButton style={{ width: "100px" }} onClick={handleSubmit}>Flag Driver</FormButton></div>
@@ -60,7 +62,3 @@ export const FlagDriverForm = ({ callback }) => {
         </ModalForm>
     )
 }
-
-
-
-

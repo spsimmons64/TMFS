@@ -1,16 +1,12 @@
 import { useContext, useEffect, useState } from "react"
-import { PortalSplitPlaygroundContainer, PortalSplitPlaygroundLeftContainer, PortalSplitPlaygroundRightContainer } from "../../../../../../components/portals/newpanelstyles"
-import { PDFContainer } from "../../../../../../components/portals/pdfviewer"
-import { getApiUrl } from "../../../../../../global/globals"
-import { FormButton } from "../../../../../../components/portals/buttonstyle"
-import { PendingForm } from "../pendingform"
-import { DiscardForm } from "../discardform"
-import { RejectForm } from "../rejectform"
+import { PortalSplitPlaygroundContainer, PortalSplitPlaygroundLeftContainer, PortalSplitPlaygroundRightContainer } from "../../components/portals/newpanelstyles"
+import { PDFContainer } from "../../components/portals/pdfviewer"
+import { getApiUrl } from "../../global/globals"
+import { FormButton } from "../../components/portals/buttonstyle"
+import { useGlobalContext } from "../../global/contexts/globalcontext"
+import { DriverContext } from "../portal/dashboard/drivers/contexts/drivercontext"
 import styled from "styled-components"
-import { useGlobalContext } from "../../../../../../global/contexts/globalcontext"
-import { DriverContext } from "../../contexts/drivercontext"
-import { useDriverFlagsContext } from "../../classes/driverflags"
-
+import { FormRouterContext } from "./formroutercontext"
 
 const ActionDiv = styled.div`
 position: relative;
@@ -42,18 +38,11 @@ border-bottom:1px dotted #B6B6B6;
 font-size: 14px;
 `
 export const OverviewNew = ({ callback }) => {
+    const { openForm, closeForm } = useContext(FormRouterContext);
     const [pdfData, setPdfData] = useState({ busy: true, data: "" })
     const { driverRecord} = useContext(DriverContext)
     const [subForms, setSubForms] = useState({ pending: false, discard: false, reject: false, policy: false, flag: false })
-    const { globalState, fetchProfile } = useGlobalContext();    
-
-    const handleFormCallback = (res) => {
-        setSubForms({ record: {}, pending: false, discard: false, reject: false, policy: false, flag: false });
-        if (res.status === 200) {
-            fetchProfile("accounts", globalState.account.recordid, globalState.user.recordid)
-            callback()
-        }
-    }
+    const { globalState, fetchProfile } = useGlobalContext(); 
 
     const getPdfFile = async () => {
         let rec = driverRecord.documents.find(r=>r.typecode==="11")
@@ -67,12 +56,13 @@ export const OverviewNew = ({ callback }) => {
         }
     }
 
-    const setForm = (formType) => {
-        setSubForms({
-            pending: formType === "pending" ? true : false,
-            discard: formType === "discard" ? true : false,
-            reject: formType === "reject" ? true : false,
-        })
+    const setForm = (formId) => {
+        openForm(formId,{},formCallback)
+    }
+
+    const formCallback = (resp) => {
+        closeForm()        
+        resp && callback()
     }
 
     useEffect(() => { getPdfFile() }, [])
@@ -92,21 +82,21 @@ export const OverviewNew = ({ callback }) => {
                 <div style={{ borderBottom: "1px dotted #B6B6B6" }}><h2>Actions...</h2></div>
                 <ActionDiv>
                     <div style={{ width: "100%", padding: "10px 0px", textAlign: "center" }}>
-                        <FormButton color="green" style={{ width: "240px", height: "42px" }} onClick={() => setForm("pending")}>Move To Pending Employment</FormButton>
+                        <FormButton color="green" style={{ width: "240px", height: "42px" }} onClick={() => setForm(5)}>Move To Pending Employment</FormButton>
                     </div>
                     <p style={{ padding: "10px 0px" }}><strong>Consider This Driver For Employment.</strong></p>
                     Once considered you can run PSP, MVR, CDLIS for further investigation.
                 </ActionDiv>
                 <ActionDiv>
                     <div style={{ width: "100%", padding: "10px 0px", textAlign: "center" }}>
-                        <FormButton color="red" style={{ width: "240px", height: "42px" }} onClick={() => setForm("discard")}>Discard This Application</FormButton>
+                        <FormButton color="red" style={{ width: "240px", height: "42px" }} onClick={() => setForm(6)}>Discard This Application</FormButton>
                     </div>
                     <p style={{ padding: "10px" }}><strong>DO NOT Consider This Driver For Employment.</strong></p>
                     This driver will not be hired at this time.
                 </ActionDiv>
                 <ActionDiv>
                     <div style={{ width: "100%", padding: "10px 0px", textAlign: "center" }}>
-                        <FormButton color="gold" style={{ width: "240px", height: "42px" }} onClick={() => setForm("reject")}>Send Back For Correction</FormButton>
+                        <FormButton color="gold" style={{ width: "240px", height: "42px" }} onClick={() => setForm(7)}>Send Back For Correction</FormButton>
                     </div>
                     <p style={{ padding: "10px 0px" }}><strong>Send Back For Correction.</strong></p>
                     <p>Send the application back for incomplete or errors on the. You'll provide a reason and the applicant can fix and resubmit.</p>
@@ -126,9 +116,5 @@ export const OverviewNew = ({ callback }) => {
                 </CorrectionsContainer>
             </PortalSplitPlaygroundRightContainer>
         </PortalSplitPlaygroundContainer>
-        {subForms.pending && <PendingForm callback={handleFormCallback} />}
-        {subForms.discard && <DiscardForm callback={handleFormCallback} />}
-        {subForms.reject && <RejectForm callback={handleFormCallback} />}
-
     </>)
 }

@@ -45,17 +45,16 @@ export const LoginLayout = () => {
     const { fetchData } = useRestApi();
     const { siteroute, siteid, route } = getSiteIdRoute()
 
-    const fetchEntityData = async (siteroute, siteid, route) => {
+    const fetchEntityData = async (siteroute, siteid, route) => {        
         let url = `fetchobj/login?siteroute=${siteroute}&id=${siteid || ""}&route=${route}`
         let data = await fetchData(url, "GET")
-        if (data.status === 200) {
-            console.log(data.data)
+        if (data.status === 200) {            
             setEntityData(data.data)
         }
         if (data.status === 400) nav("/page404", { replace: true, reloadDocument: true })
     }
 
-    useEffect(() => {        
+    useEffect(() => {                
         if(entityData.entityid){            
             if (Object.keys(globalState.user).length == 0) {            
                 localStorage.setItem("entity", JSON.stringify(entityData))

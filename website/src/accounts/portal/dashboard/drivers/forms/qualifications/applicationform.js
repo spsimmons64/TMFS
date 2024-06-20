@@ -7,9 +7,8 @@ import { DriverContext } from "../../contexts/drivercontext"
 import { FormSection, ModalForm, ModalFormBody, ModalFormFooter, ModalFormHeader } from "../../../../../../components/global/forms/forms"
 import { FormFlexRowStyle } from "../../../../../../components/portals/formstyles"
 import { CircleBack, QualificationsContext } from "../../classes/qualifications"
-import { getApiUrl, getBubbleColor, getBubbleIcon } from "../../../../../../global/globals"
+import { getBubbleColor, getBubbleIcon } from "../../../../../../global/globals"
 import { FormInput } from "../../../../../../components/portals/inputstyles"
-import { PDFModalContainer } from "../../../../../../components/portals/pdfviewer"
 import { PDFContext } from "../../../../../../global/contexts/pdfcontext"
 
 
@@ -19,7 +18,7 @@ export const QualApplicationForm = ({ callback }) => {
     const [filefields, setFileFields] = useState("")
     const { qualifications } = useContext(QualificationsContext)
     const { sendFormData, getValue, setFormBusy, formState } = useFormHook("pspreport-form")
-    const [pdfCard, setPdfCard] = useState({ open: false, data: "" })
+    
 
     const handleSubmit = async () => {
         let data = new FormData()

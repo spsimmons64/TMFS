@@ -10,7 +10,7 @@ import { FormInput } from "../../../../../components/portals/inputstyles"
 import { TabContainer } from "../../../../../components/portals/tabcontainer"
 import { PortalPlayGroundPageTitleStyle, PortalPlayGroundStatsContainer } from "../../../../../components/portals/newpanelstyles"
 import { StatBoxes } from "../../../../../classes/statboxes"
-import { DriversForm } from "../forms/driversform"
+import { DriversForm } from "../../../../forms/driversform"
 import { useRestApi } from "../../../../../global/hooks/apihook"
 import { DriverContext } from "../contexts/drivercontext"
 import styled from "styled-components"
@@ -31,7 +31,7 @@ export const AllDriversGrid = () => {
     const { globalState } = useGlobalContext()
     const { fetchData } = useRestApi();
     const { setDriverRecord } = useContext(DriverContext)
-    const { gridState, setGridUrl, setGridPage, setGridSort, setGridPageMax } = useGridHook()
+    const { gridState, setGridUrl, setGridPage, setGridSort, setGridPageMax,fetchGridData} = useGridHook()
     const [tabPage, setTabPage] = useState(0)    
     const [driverForm, setDriverForm] = useState(false)
     const tabOptions = [{ text: "Driver List", hidden: false }, { text: "Search", hidden: false }]
@@ -178,6 +178,7 @@ export const AllDriversGrid = () => {
     const handleDriverFormCallBack = (resp) => {
         setDriverRecord({})
         setDriverForm(false)
+        fetchGridData()    
     }
 
     useEffect(() => {

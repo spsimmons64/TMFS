@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useMousePosition } from "../../../../../global/hooks/usemousepos";
-import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretRight } from "@fortawesome/free-solid-svg-icons";
-
+import { FormRouterContext } from "../../../../forms/formroutercontext";
+import { DriverContext } from "../contexts/drivercontext";
+import styled from "styled-components";
 
 const ActionMenuContainerStyle = styled.div`
 position: absolute;
@@ -18,8 +19,7 @@ border: 3px solid #164398;
 z-index:50000;
 overflow: hidden;
 box-shadow: 0 29px 52px rgba(0,0,0,0.40), 0 25px 16px rgba(0,0,0,0.20);
-transition: max-height .2s ease-in-out, opacity .5s ease-in-out;
-
+transition: max-height .1s ease-in, opacity .2s ease-in;
 `
 const ActionMenuContainer = styled.div`
     padding: 5px 0px;    
@@ -32,7 +32,6 @@ const ActionMenuContainer = styled.div`
         background-color: #e6e6e6;
     }
 `
-
 export const DriverActionContext = createContext()
 
 export const DriverActionProvider = ({ children }) => {
@@ -48,27 +47,44 @@ export const useDriverAction = () => {
     return contexts;
 }
 
-export const DriverActionMenu = ({ menu }) => {
-    const { isOpen, setActionOpen, setActionClose } = useDriverAction()
+export const DriverActionMenu = () => {
+    const { driverRecord,} = useContext(DriverContext)
+    const { openForm, closeForm } = useContext(FormRouterContext);
+    const { isOpen, setActionClose } = useDriverAction()
+    const validDriver = driverRecord.status === "New" || driverRecord.status === "Inactive"
+    const forms = [
+        { formId: 0, text: "Send Workplace Policies", params: {}, hidden: false },
+        { formId: 1, text: "Send Memo", params:{}, hidden: validDriver },
+        { formId: 2, text: "Request License Upload",params:{route:"license"}, hidden: validDriver },
+        { formId: 2, text: "Request Medical Certificate Upload",params:{route:"medcard"}, hidden: validDriver },
+        { formId: 2, text: "Request Employement Correction",params:{route:"employment"}, hidden: validDriver },
+        { formId: 3, text: "Flag This Driver",params:{}, hidden: false }
+    ]    
     const divRef = useRef(null)
 
     const handleMouseDown = ({ target }) => {
         if (divRef.current && !divRef.current.contains(target)) setActionClose();
     }
 
+    const callForm = (id) => {
+        setActionClose()
+        const item = forms.find(r=>r.formId === id)
+        if(item) openForm(item.formId,item.params,closeForm)        
+    }
+
     useEffect(() => {
         document.addEventListener("mousedown", handleMouseDown);
-        return () => {document.removeEventListener("mousedown", handleMouseDown)}
+        return () => { document.removeEventListener("mousedown", handleMouseDown) }
     }, [])
 
     return (
         <ActionMenuContainerStyle ref={divRef} open={isOpen.open} xpos={isOpen.xpos} ypos={isOpen.ypos}>
             <div style={{ width: "100%", padding: "10px" }}>
-                {menu.map((r, rndx) => {
+                {forms.map((r) => {
                     const color = r.text === "Flag This Driver" ? "red" : "#164398"
                     return (<React.Fragment key={r.text}>
                         {!r.hidden
-                            ? <ActionMenuContainer onClick={r.action}>
+                            ? <ActionMenuContainer onClick={()=>callForm(r.formId)}>
                                 <FontAwesomeIcon icon={faCaretRight} style={{ paddingRight: "5px" }} color={color} />
                                 <span style={{ color: color, textDecoration: "underline" }}>{r.text}</span>
                             </ActionMenuContainer>

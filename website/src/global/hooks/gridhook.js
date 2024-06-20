@@ -19,7 +19,6 @@ export const initGridState = {
     selected: []
 }
 
-
 export const useGridHook = () => {
     const [messageState, setMessageState] = useContext(MessageContext);
     const [gridState, setGridState] = useState({ ...initGridState }); 

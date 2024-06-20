@@ -10,10 +10,11 @@ import { FormInput } from "../../../../../components/portals/inputstyles"
 import { TabContainer } from "../../../../../components/portals/tabcontainer"
 import { PortalPlayGroundPageTitleStyle, PortalPlayGroundStatsContainer } from "../../../../../components/portals/newpanelstyles"
 import { StatBoxes } from "../../../../../classes/statboxes"
-import { DriversForm } from "../forms/driversform"
+import { DriversForm } from "../../../../forms/driversform"
 import { DriverContext } from "../contexts/drivercontext"
 import { useRestApi } from "../../../../../global/hooks/apihook"
 import styled from "styled-components"
+
 
 const GridContainer = styled.div`
 width: 100%;

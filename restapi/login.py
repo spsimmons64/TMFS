@@ -90,7 +90,7 @@ class Login(Resource):
             if pwd_cnt and check_password(pwd_set[0]["password"],self.payload["password"]):                
                 usr_rec["lastlogin"] = get_sql_date_time()                
                 if Database().update("users",usr_rec):         
-                    ent_rec = Database().fetch(self.payload["entity"],self.payload["entityid"])  
+                    ent_rec = Database().fetch(self.payload["entity"],self.payload["entityid"])                      
                     token = jwt.encode({"recordid": usr_rec["recordid"]}, app.config["SECRET_KEY"], algorithm="HS256")                                                                
                     site_route = ent_rec["siteroute"] if "siteroute" in ent_rec else ""
                     resp = make_response({"status":200,"data":{"userid":usr_rec["recordid"],"siteroute":site_route}})

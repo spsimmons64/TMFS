@@ -1,15 +1,14 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import styled from "styled-components";
 import { CircleButton } from "../../../../../components/portals/buttonstyle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFlag } from "@fortawesome/free-solid-svg-icons";
-import { ClearFlagForm } from "../forms/clearflagform";
+import { FormRouterContext } from "../../../../forms/formroutercontext";
+import styled from "styled-components";
 
 export const DriverFlagContext = createContext()
 
 export const DriverFlagContextProvider = ({ children }) => {
     const [flagList, setFlagList] = useState([])
-
     return (<DriverFlagContext.Provider value={{ flagList, setFlagList }}>{children}</DriverFlagContext.Provider>)
 }
 
@@ -56,53 +55,44 @@ text-decoration: underline;
 color:#164398;
 `
 export const DriverFlagsList = () => {
-    const { flagList} = useDriverFlagsContext()
-    const [formOpen,setFormOpen] = useState({open:false,ndx:-1,record:{}})
+    const { flagList } = useDriverFlagsContext()
+    const { openForm, closeForm } = useContext(FormRouterContext);
 
-    const handleRecordEdit = ({target}) => {
-        const id= target.getAttribute("data-id")
-        const ndx = flagList.findIndex(r=>r.recordid===id)
-        ndx > -1 && setFormOpen({open:true,record:flagList[ndx],ndx:ndx})
+    const handleRecordEdit = ({ target }) => {
+        const id = target.getAttribute("data-id")
+        const rec = flagList.find(r => r.recordid === id)
+        console.log(rec)
+        rec && openForm(4, { ...rec }, closeForm)
     }
 
-    const handleEditCallback = (resp) => {
-        const ndx = formOpen.ndx;
-        setFormOpen({open:false,record:{},ndx:-1})
-        if(resp.status===200){
-            let newList = [...flagList]
-            newList.splice(ndx,1)            
-        }
-    }
+    useEffect(() => {
+        flagList.forEach(flag => {
+            setTimeout(() => { const el = document.getElementById(`flag-${flag.recordid}`).classList.add("flagopen") }, 200)
+        })
+    }, [flagList])
 
-    useEffect(()=>{                
-        flagList.forEach(flag=>{
-            setTimeout(()=>{const el = document.getElementById(`flag-${flag.recordid}`).classList.add("flagopen")},200)})
-        },[flagList])
-
-    return (
-        <>
-            {flagList.map(r => {
-                return (
-                    <DriverFlagContainerStyle id={`flag-${r.recordid}`} key={r.recordid} open={r.open}>
-                        <DriverFlagContainerIconStyle >
-                            < CircleButton
-                                size="24px"
-                                style={{
-                                    color: "#FFF",
-                                    border: "none",
-                                    backgroundImage: "linear-gradient(to bottom, rgba(233,73,73,1) 0%,rgba(159,20,20,1) 100%)"
-                                }}><FontAwesomeIcon style={{ pointerEvents: "none" }} icon={faFlag} />
-                            </CircleButton>
-                        </DriverFlagContainerIconStyle>
-                        <DriverFlagContainerDateStyle  >{r.flagdate}</DriverFlagContainerDateStyle>
-                        <DriverFlagContainerTextStyle  >{r.flagreason}</DriverFlagContainerTextStyle>
-                        <DriverFlagContainerClearStyle data-id={r.recordid} onClick={handleRecordEdit} style={{cursor:"pointer"}}>
-                            <span style={{pointerEvents:"none",userSelect:"none"}}>CLEAR FLAG</span>
-                        </DriverFlagContainerClearStyle>
-                    </DriverFlagContainerStyle>
-                )
-            })}
-            {formOpen.open && <ClearFlagForm record={formOpen.record} callback={handleEditCallback} />}
-        </>
+    return (<>
+        {flagList.map(r => {
+            return (
+                <DriverFlagContainerStyle id={`flag-${r.recordid}`} key={r.recordid} open={r.open}>
+                    <DriverFlagContainerIconStyle >
+                        < CircleButton
+                            size="24px"
+                            style={{
+                                color: "#FFF",
+                                border: "none",
+                                backgroundImage: "linear-gradient(to bottom, rgba(233,73,73,1) 0%,rgba(159,20,20,1) 100%)"
+                            }}><FontAwesomeIcon style={{ pointerEvents: "none" }} icon={faFlag} />
+                        </CircleButton>
+                    </DriverFlagContainerIconStyle>
+                    <DriverFlagContainerDateStyle  >{r.flagdate}</DriverFlagContainerDateStyle>
+                    <DriverFlagContainerTextStyle  >{r.flagreason}</DriverFlagContainerTextStyle>
+                    <DriverFlagContainerClearStyle data-id={r.recordid} onClick={handleRecordEdit} style={{ cursor: "pointer" }}>
+                        <span style={{ pointerEvents: "none", userSelect: "none" }}>CLEAR FLAG</span>
+                    </DriverFlagContainerClearStyle>
+                </DriverFlagContainerStyle>
+            )
+        })}
+    </>
     )
 }
