@@ -7,6 +7,14 @@ import { PendingForm } from "./pendingform";
 import { DiscardForm } from "./discardform";
 import { RejectForm } from "./rejectform";
 import { ClearFlagForm } from "./clearflagform";
+import { ClearinghouseForm } from "./clearinghouseform";
+import { PSPReportForm } from "./pspreportform";
+import { MVRReportForm } from "./mvrreoportform";
+import { CDLISReportForm } from "./cdlisreportform";
+import { UploadFileForm } from "./uploadfileform";
+import { ApplicationForm } from "./applicationform";
+import { DriverInquiryForm } from "./driverinquiryform";
+import { DriverInquiryDocForm } from "./driverinquirydocform";
 
 export const FormRouterContext = createContext()
 
@@ -20,13 +28,26 @@ export const FormRouterContextProvider = ({ children }) => {
         {id:3,component:FlagDriverForm},
         {id:4,component:ClearFlagForm},
         {id:5,component:PendingForm},
-        {id:6,component:DiscardForm},
+        {id:6,component:DiscardForm},     
         {id:7,component:RejectForm},    
+        {id:8,component:ClearinghouseForm},    
+        {id:9,component:PSPReportForm},    
+        {id:10,component:MVRReportForm},    
+        {id:11,component:CDLISReportForm},
+        {id:12,component:UploadFileForm},
+        {id:13,component:ApplicationForm},  
+        {id:14,component:DriverInquiryForm},
+        {id:15,component:DriverInquiryDocForm},
+
     ]
 
-    const openForm = (formid,params,callback) => setCurrForm({id:formid,params:params,callback:callback})
+    
 
-    const closeForm = () => setCurrForm({...initialState})
+    const openForm = (formid,params,callback=undefined) => {        
+        setCurrForm({id:parseInt(formid),params:params,callback:callback})
+    }
+
+    const closeForm = () => {setCurrForm({...initialState})}
 
     const fetchForm = (id) => {        
         if(id===-1) return <></>
@@ -41,4 +62,5 @@ export const FormRouterContextProvider = ({ children }) => {
             {fetchForm(currForm.id)}        
         </FormRouterContext.Provider>
     )
+    
 }

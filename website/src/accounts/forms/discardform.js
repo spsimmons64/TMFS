@@ -6,7 +6,7 @@ import { noHireType } from "../../global/staticdata"
 import { toSimpleDate } from "../../global/globals"
 import { FormDate, FormSelect, FormText } from "../../components/portals/inputstyles"
 import { DriverContext } from "../portal/dashboard/drivers/contexts/drivercontext"
-import { ModalForm, ModalFormBody, ModalFormFooter, ModalFormHeader,FormSection } from "../../components/global/forms/forms"
+import { ModalForm, ModalFormBody, ModalFormFooter, ModalFormHeader, FormSection, FormQualification, FormQualificationHeader, FormQualificationData } from "../../components/global/forms/forms"
 
 
 
@@ -60,35 +60,38 @@ export const DiscardForm = ({ callback }) => {
         <ModalForm width="680px">
             <ModalFormHeader title="Discard Application" busy={formState.busy} />
             <ModalFormBody id={formState.id} busy={formState.busy}>
-                <FormSection style={{ paddingTop: "0px" }}>
+                <FormSection style={{ paddingTop: "0px", marginBottom: "10px" }}>
                     You have chosen NOT to consider employing <strong>{driverRecord["firstname"]} {driverRecord["lastname"]}</strong>. Please choose the
                     reason below and provide more details if desired. Once finished, please confirm the action to not hire the applicant.
                 </FormSection>
-                <FormSection style={{ borderBottom: "none", paddingBottom: "0px" }}>
-                    <FormTopLabel>Reason For Not Hiring</FormTopLabel>
-                    <FormSelect
-                        id="nohirereason"
-                        options={noHireType}
-                        value={getValue("nohirereason")}
-                        onChange={handleChange}
-                        autoFocus
-                    />
-                    <FormTopLabel>Additional Details</FormTopLabel>
-                    <FormText
-                        id="additionalinfo"
-                        value={getValue("additionalinfo")}
-                        error={getError("additionalinfo")}
-                        onChange={handleChange}
-                        height="100px"
-                    />
-                    <FormTopLabel>Discard Date</FormTopLabel>
-                    <FormDate
-                        id="recorddate"
-                        value={getValue("recorddate")}
-                        error={getError("recorddate")}
-                        onChange={handleChange}
-                    />
-                </FormSection>
+                <FormQualification style={{marginBottom:"0px"}}>
+                    <FormQualificationHeader title="Discard Information" />
+                    <FormQualificationData style={{ padding: "10px" }}>
+                        <FormTopLabel>Reason For Not Hiring</FormTopLabel>
+                        <FormSelect
+                            id="nohirereason"
+                            options={noHireType}
+                            value={getValue("nohirereason")}
+                            onChange={handleChange}
+                            autoFocus
+                        />
+                        <FormTopLabel>Additional Details</FormTopLabel>
+                        <FormText
+                            id="additionalinfo"
+                            value={getValue("additionalinfo")}
+                            error={getError("additionalinfo")}
+                            onChange={handleChange}
+                            height="100px"
+                        />
+                        <FormTopLabel>Discard Date</FormTopLabel>
+                        <FormDate
+                            id="recorddate"
+                            value={getValue("recorddate")}
+                            error={getError("recorddate")}
+                            onChange={handleChange}
+                        />
+                    </FormQualificationData>
+                </FormQualification>                
             </ModalFormBody>
             <ModalFormFooter style={{ justifyContent: "flex-end" }}>
                 <div><FormButton style={{ width: "100px" }} onClick={handleSubmit}>Confirm</FormButton></div>

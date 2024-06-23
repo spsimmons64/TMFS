@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react"
-import { FormSection, ModalForm, ModalFormBody, ModalFormFooter, ModalFormHeader } from "../../components/global/forms/forms"
+import { FormQualification, FormQualificationData, FormQualificationHeader, FormSection, ModalForm, ModalFormBody, ModalFormFooter, ModalFormHeader } from "../../components/global/forms/forms"
 import { DriverContext } from "../portal/dashboard/drivers/contexts/drivercontext"
 import { FormCheck, FormInput } from "../../components/portals/inputstyles"
 import { FormFlexRowStyle, FormTopLabel } from "../../components/portals/formstyles"
@@ -60,52 +60,56 @@ export const SendPoliciesForm = ({ callback }) => {
         <ModalForm width="460px">
             <ModalFormHeader title="Email Driver Company Policies" busy={formState.busy} />
             <ModalFormBody id={formState.id} busy={formState.busy}>
-                <FormSection style={{ paddingTop: "0px" }}>
-                    Email Workplace Policies To Driver
+                <FormSection style={{ paddingTop: "0px", marginBottom: "10px" }}>
+                    This action will allow you to email a copy of your General Workplace Policy and / or Alcohol & Drug Policy
+                    to the driver <strong>{driverRecord.firstname} {driverRecord.lastname}</strong>.
                 </FormSection>
-                <FormSection style={{ borderBottom: "none" }}>
-                    <FormTopLabel>Email Address To Send To</FormTopLabel>
-                    <FormInput
-                        id="emailaddress"
-                        mask="text"
-                        value={getValue("emailaddress")}
-                        error={getError("emailaddress")}
-                        onChange={handleChange}
-                        autoFocus
-                    />
-                    <FormTopLabel>Select The Policies To Email</FormTopLabel>
-                    <div style={{ backgroundColor: "#E9E9E9", border: "1px dotted #B6B6B6", borderRadius: "5px", padding: "5px" }}>
-                        <div style={{ marginBottom: "5px" }}>
-                            <FormFlexRowStyle>
-                                <div style={{ width: "250px" }}>
-                                    <FormCheck style={{ paddingBottom: "10px" }}
-                                        id="general"
-                                        label="General Work Policy"
-                                        value={getValue("general")}
-                                        checked={getValue("general") == 1}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-                                <div data-id="w" style={{ flex: 1, color: "#164398", cursor: "pointer" }} onClick={handlePdf} ><u style={{ pointerEvents: "none" }}>View This Policy</u></div>
-                            </FormFlexRowStyle>
+                <FormQualification style={{marginBottom:"0px"}}>
+                    <FormQualificationHeader title="Email Company Policies" />
+                    <FormQualificationData  style={{ padding: "10px" }}>
+                        <FormTopLabel>Email Address To Send To</FormTopLabel>
+                        <FormInput
+                            id="emailaddress"
+                            mask="text"
+                            value={getValue("emailaddress")}
+                            error={getError("emailaddress")}
+                            onChange={handleChange}
+                            autoFocus
+                        />
+                        <FormTopLabel>Select The Policies To Email</FormTopLabel>
+                        <div style={{ backgroundColor: "#E9E9E9", border: "1px dotted #B6B6B6", borderRadius: "5px", padding: "5px" }}>
+                            <div style={{ marginBottom: "5px" }}>
+                                <FormFlexRowStyle>
+                                    <div style={{ width: "250px" }}>
+                                        <FormCheck style={{ paddingBottom: "10px" }}
+                                            id="general"
+                                            label="General Work Policy"
+                                            value={getValue("general")}
+                                            checked={getValue("general") == 1}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                    <div data-id="w" style={{ flex: 1, color: "#164398", cursor: "pointer" }} onClick={handlePdf} ><u style={{ pointerEvents: "none" }}>View This Policy</u></div>
+                                </FormFlexRowStyle>
+                            </div>
+                            <div style={{ marginTop: "5px" }}>
+                                <FormFlexRowStyle>
+                                    <div style={{ width: "250px" }}>
+                                        <FormCheck
+                                            id="substance"
+                                            label="Alcohol And Drug Policy"
+                                            value={getValue("substance")}
+                                            checked={getValue("substance") == 1}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                    <div data-id="d" style={{ flex: 1, color: "#164398", cursor: "pointer" }} onClick={handlePdf} ><u style={{ pointerEvents: "none" }}>View This Policy</u></div>
+                                </FormFlexRowStyle>
+                            </div>
                         </div>
-                        <div style={{ marginTop: "5px" }}>
-                            <FormFlexRowStyle>
-                                <div style={{ width: "250px" }}>
-                                    <FormCheck
-                                        id="substance"
-                                        label="Alcohol And Drug Policy"
-                                        value={getValue("substance")}
-                                        checked={getValue("substance") == 1}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-                                <div data-id="d" style={{ flex: 1, color: "#164398", cursor: "pointer" }} onClick={handlePdf} ><u style={{ pointerEvents: "none" }}>View This Policy</u></div>
-                            </FormFlexRowStyle>
-                        </div>
-                    </div>
-                    <div style={{ padding: "2px 0px 0px 3px", height: "20px", color: "#FF6666", fontSize: "12px" }}>{getError("policyerror")}</div>
-                </FormSection>
+                        <div style={{ padding: "2px 0px 0px 3px", height: "20px", color: "#FF6666", fontSize: "12px" }}>{getError("policyerror")}</div>
+                    </FormQualificationData>
+                </FormQualification>
             </ModalFormBody>
             <ModalFormFooter style={{ justifyContent: "flex-end" }}>
                 <div><FormButton style={{ width: "100px" }} onClick={handleSubmit}>Confirm</FormButton></div>

@@ -3,9 +3,9 @@ import { useGlobalContext } from "../../../global/contexts/globalcontext"
 import { useGridHook } from "../../../global/hooks/gridhook"
 import { useContext, useEffect, useState } from "react"
 import { GridPager } from "../../../components/portals/gridpager"
-import { DriversForm } from "./drivers/forms/driversform"
 import { DriverContext } from "./drivers/contexts/drivercontext"
 import styled from "styled-components"
+import { DriversForm } from "../../forms/driversform"
 
 const GridContainer = styled.div`
 width: 100%;

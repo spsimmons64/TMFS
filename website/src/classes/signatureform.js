@@ -10,7 +10,7 @@ import { ModalFormFooter } from "../components/global/forms/forms"
 
 export const SignatureForm = ({ esignature, entity, resourceid, doctype, callback }) => {
     const { globalState, updateState } = useGlobalContext()
-    const [ lookupMode, setLookupMode ] = useState(true)
+    const [lookupMode, setLookupMode] = useState(true)
     const { handleChange, getValue, getError, sendFormData, setFormErrors } = useFormHook()
     const validate = () => {
         let errors = {}
@@ -49,22 +49,23 @@ export const SignatureForm = ({ esignature, entity, resourceid, doctype, callbac
                 data.append("cbirthdate", getValue("cbirthdate"))
                 data.append("entityname", getValue("entityname"))
                 data.append("resourceid", resourceid)
-                const response = await sendFormData("POST", data, "signatures");                
-                if(response.status === 200){
+                const response = await sendFormData("POST", data, "signatures");
+                if (response.status === 200) {
                     if (entity === "user") {
                         let holdstate = { ...globalState }
                         holdstate.user.esignature = response.data
                         updateState(holdstate)
-                    }
+                    }                    
+                    response.data.esignaturedate = toSimpleDate(new Date())                    
                     callback(response.data)
-                }                                 
+                }
                 setLookupMode(false)
             }
         } else {
             esignature.signaturedate = toSimpleDate(new Date())
             callback(esignature)
-        }        
-    }    
+        }
+    }
 
     return (
         <ModalCard style={{ padding: "10px", width: "730px", zIndex: 2000 }} id="signature-form">

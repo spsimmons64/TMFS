@@ -41,8 +41,6 @@ export const OverviewNew = ({ callback }) => {
     const { openForm, closeForm } = useContext(FormRouterContext);
     const [pdfData, setPdfData] = useState({ busy: true, data: "" })
     const { driverRecord} = useContext(DriverContext)
-    const [subForms, setSubForms] = useState({ pending: false, discard: false, reject: false, policy: false, flag: false })
-    const { globalState, fetchProfile } = useGlobalContext(); 
 
     const getPdfFile = async () => {
         let rec = driverRecord.documents.find(r=>r.typecode==="11")

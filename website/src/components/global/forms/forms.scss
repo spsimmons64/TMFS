@@ -76,7 +76,7 @@
 
 .div-modal-form-container {
     position: relative;
-    background-color: #FFFFFF;
+    background-color: #F2F2F2;
     color: #333333;
     border-radius: 5px;
     box-shadow: 4.1px 8.2px 8.2px hsl(0deg 0% 0% / 0.77);
@@ -87,7 +87,7 @@
     position: relative;
     display: flex;
     flex-flow: column;
-    background-color: #FFFFFF;
+    background-color: #F2F2F2;
     color: #333333;
     border-radius: 5px;
     box-shadow: 4.1px 8.2px 8.2px hsl(0deg 0% 0% / 0.77);    
@@ -102,7 +102,7 @@
     display: flex;
     flex-flow: column;
     flex: 1;
-    background-color: #FFFFFF;         
+    background-color: #F2F2F2;         
 }
 
 .div-modal-form-body-scroller {
@@ -114,5 +114,40 @@
 .form-section {
     padding: 10px 0px;
     border-bottom: 1px dotted #B6B6B6;
+}
+.form-qualification-section{
+    width: 100%;    
+    margin-bottom: 20px;    
+    border-radius: 5px;
+    // box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.form-qualification-section-header{
+    padding: 3px 5px;
+    background-color: #B6B6B6;
+    color: #164398;
+    font-weight: 600;
+}
+.form-qualification-section-data{
+    padding: 5px;
+    border: 1px solid #B6B6B6;    
+    background-color: #FFF;
+}
+.form-qualification-section-data-icon{
+    display :flex;  
+    align-items: center;  
+    padding: 5px;
+    border: 1px solid #B6B6B6;
+    border-top: none;
+    background-color: #FFF;    
 
+}
+.form-qualification-section-data-icon-left{
+    display: flex;
+    align-items: center;
+    justify-content: center;    
+}
+.form-qualification-section-data-icon-right{
+    flex: 1;
+    line-height: 1.5em;
+    margin-left:20px;
 }

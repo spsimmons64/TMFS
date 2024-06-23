@@ -2,16 +2,11 @@ import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { FormButton, FormButtonStyle } from "../../components/portals/buttonstyle"
 import { useContext, useEffect, useState } from "react"
-import { useGlobalContext } from "../../global/contexts/globalcontext"
-import { DiscardForm } from "../portal/dashboard/drivers/forms/discardform"
-import { ClearinghouseForm } from "../portal/dashboard/drivers/forms/clearinghouseform"
 import { DriverContext } from "../portal/dashboard/drivers/contexts/drivercontext"
-import { PSPReportForm } from "../portal/dashboard/drivers/forms/pspreportform"
 import { CircleBack, QualificationsContext } from "../portal/dashboard/drivers/classes/qualifications"
-import { MVRReportForm } from "../portal/dashboard/drivers/forms/mvrreoportform"
 import { getBubbleColor, getBubbleIcon } from "../../global/globals"
 import styled from "styled-components"
-import { CDLISReportForm } from "../portal/dashboard/drivers/forms/cdlisreportform"
+import { FormRouterContext } from "./formroutercontext"
 
 
 const PendingContainerStyle = styled.div`
@@ -65,35 +60,16 @@ border-radius: 5px;
 padding: 20px;
 `
 export const OverviewPending = ({ callback, settab }) => {
+    const { openForm, closeForm } = useContext(FormRouterContext);
     const { driverRecord } = useContext(DriverContext)
     const { qualifications } = useContext(QualificationsContext)
     const [formLoaded, setFormLoaded] = useState(false)    
-    const [subForms, setSubForms] = useState({
-        record: {},
-        pending: false,
-        discard: false,
-        reject: false,
-        policy: false,
-        flag: false
-    })
-    const { globalState, fetchProfile } = useGlobalContext();
 
-    const handleFormCallback = (res) => {
-        setSubForms({ record: {}, pending: false, discard: false, reject: false, policy: false, flag: false });                
-        if (res.status === 200) {
-            fetchProfile("accounts", globalState.account.recordid, globalState.user.recordid)
-            callback()
-        }
-    }
-    const setForm = (formType) => {
-        setSubForms({
-            hire: formType === "hire" ? true : false,
-            discard: formType === "discard" ? true : false,
-            clearinghouse: formType === "clearinghouse" ? true : false,
-            pspreport: formType === "pspreport" ? true : false,
-            mvrreport: formType === "mvrreport" ? true : false,
-            cdlisreport: formType === "cdlisreport" ? true : false,
-        })
+    const setForm = (formId) => {openForm(formId,{},formCallback)}
+
+    const formCallback = (resp) => {
+        closeForm()        
+        resp && callback()
     }
 
     const getMVRStatus = ()  => {   
@@ -133,7 +109,7 @@ export const OverviewPending = ({ callback, settab }) => {
                                 <strong>D&A Clearinghouse Query</strong>
                                 <div>{qualifications.clearinghouse.text}</div>
                             </div>
-                            <FormButton style={{ width: "190px" }} onClick={() => setForm("clearinghouse")}>View Clearinghouse</FormButton>
+                            <FormButton style={{ width: "190px" }} onClick={() => setForm(8)}>View Clearinghouse</FormButton>
                         </div>
                     </CheckListContainerStyle>
                         <CheckListContainerStyle style={{ paddingLeft: "5px" }}>
@@ -147,7 +123,7 @@ export const OverviewPending = ({ callback, settab }) => {
                                 <strong>DOT PSP Report</strong>
                                 <div>{qualifications.pspreport.text}</div>
                             </div>
-                            <FormButton style={{ width: "190px" }} onClick={() => setForm("pspreport")}>Run PSP Report</FormButton>
+                            <FormButton style={{ width: "190px" }} onClick={() => setForm(9)}>Run PSP Report</FormButton>
                         </div>
                     </CheckListContainerStyle>
                     <CheckListContainerStyle style={{ paddingLeft: "5px" }}>
@@ -165,7 +141,7 @@ export const OverviewPending = ({ callback, settab }) => {
                                 : <div>{qualifications.mvrreport[0].text}</div>
                                 }                                
                             </div>
-                            <FormButton style={{ width: "190px" }} onClick={()=>setForm("mvrreport")}>Run MVR Report</FormButton>
+                            <FormButton style={{ width: "190px" }} onClick={()=>setForm(10)}>Run MVR Report</FormButton>
                         </div>
                     </CheckListContainerStyle>
                     <CheckListContainerStyle style={{ paddingLeft: "5px" }}>
@@ -179,7 +155,7 @@ export const OverviewPending = ({ callback, settab }) => {
                                 <strong>CDLIS Report</strong>
                                 <div>{qualifications.cdlisreport.text}</div>
                             </div>
-                            <FormButton style={{ width: "190px" }} onClick={()=>{setForm("cdlisreport")}}>Run CDLIS Report</FormButton>
+                            <FormButton style={{ width: "190px" }} onClick={()=>{setForm(11)}}>Run CDLIS Report</FormButton>
                         </div>
                     </CheckListContainerStyle>
                     <CheckListContainerStyle style={{ paddingLeft: "5px", marginBottom: "0px" }}>
@@ -208,7 +184,7 @@ export const OverviewPending = ({ callback, settab }) => {
                             <CircleBack color="red" size="80px">
                                 <FontAwesomeIcon icon={faXmark} size="3x" />
                             </CircleBack>
-                            <FormButtonStyle onClick={() => setForm("discard")} style={{ width: "200px", marginTop: "20px" }}>Do Not Hire</FormButtonStyle>
+                            <FormButtonStyle onClick={() => setForm(6)} style={{ width: "200px", marginTop: "20px" }}>Do Not Hire</FormButtonStyle>
                         </CheckListContainerStyle>
                     </PendingContainerRightStyle>
                 </PendingContainerStyle>
@@ -245,11 +221,6 @@ export const OverviewPending = ({ callback, settab }) => {
                 <div style={{ width: "100%", textAlign: "center", margin: "20px 0px" }}>
                     <FormButton onClick={()=>settab(1)}>Edit Driver Information</FormButton>
                 </div>
-                {subForms.discard && <DiscardForm callback={handleFormCallback} />}
-                {subForms.clearinghouse && <ClearinghouseForm callback={handleFormCallback} />}
-                {subForms.pspreport && <PSPReportForm callback={handleFormCallback} />}
-                {subForms.cdlisreport && <CDLISReportForm callback={handleFormCallback} />}
-                {subForms.mvrreport && <MVRReportForm callback={handleFormCallback} />}
             </div >
         }
     </>)

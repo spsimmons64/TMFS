@@ -291,9 +291,9 @@ countries = [
 ]
 
 yes_no_na = [
-    {"value": "Y", "text": "YES"},
-    {"value": "N", "text": "NO"},
-    {"value": "A", "text": "N/A"}
+    {"value": 1, "text": "YES"},
+    {"value": 0, "text": "NO"},
+    {"value": 2, "text": "N/A"}
 ]
 
 classtypes = [

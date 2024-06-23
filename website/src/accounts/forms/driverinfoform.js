@@ -1,13 +1,13 @@
 import { useContext, useEffect, useState } from "react"
-import { DriverContext } from "../contexts/drivercontext"
-import { FormSection } from "../../../../../components/global/forms/forms"
-import { FormDate, FormInput, FormSelect, FormText } from "../../../../../components/portals/inputstyles"
-import { useFormHook } from "../../../../../global/hooks/formhook"
-import { countryTypes, driverTypes, statesArray } from "../../../../../global/staticdata"
-import { FormButton } from "../../../../../components/portals/buttonstyle"
-import { GridLoader } from "../../../../../components/portals/gridstyles"
-import { checkDate } from "../../../../../global/globals"
-import { MessageContext } from "../../../../../administration/contexts/messageContext"
+import { DriverContext } from "../portal/dashboard/drivers/contexts/drivercontext"
+import { FormSection } from "../../components/global/forms/forms"
+import { FormDate, FormInput, FormSelect, FormText } from "../../components/portals/inputstyles"
+import { useFormHook } from "../../global/hooks/formhook"
+import { countryTypes, driverTypes, statesArray } from "../../global/staticdata"
+import { FormButton } from "../../components/portals/buttonstyle"
+import { GridLoader } from "../../components/portals/gridstyles"
+import { checkDate } from "../../global/globals"
+import { MessageContext } from "../../administration/contexts/messageContext"
 
 export const DriverInfoForm = () => {
     const [messageState, setMessageState] = useContext(MessageContext);

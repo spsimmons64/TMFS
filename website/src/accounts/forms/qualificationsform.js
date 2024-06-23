@@ -1,27 +1,19 @@
-import { FormSection } from "../../../../../../components/global/forms/forms"
-import { CircleBack, QualificationsContext } from "../../classes/qualifications"
+import { FormSection } from "../../components/global/forms/forms"
+import { CircleBack, QualificationsContext } from "../portal/dashboard/drivers/classes/qualifications"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Link } from "react-router-dom"
-import { FormButton } from "../../../../../../components/portals/buttonstyle"
-import { DriverContext } from "../../contexts/drivercontext"
-import { useContext, useState } from "react"
-import { useGlobalContext } from "../../../../../../global/contexts/globalcontext"
-import { QualApplicationForm } from "./applicationform"
-import { getBubbleColor, getBubbleIcon } from "../../../../../../global/globals"
-import styled from "styled-components"
-import { DriverInquiryForm } from "./driverinquiryform"
-import { GoodFaithForm } from "./goodfaithform"
+import { FormButton } from "../../components/portals/buttonstyle"
+import { useContext } from "react"
+import { getBubbleColor, getBubbleIcon } from "../../global/globals"
 import { faMinus } from "@fortawesome/free-solid-svg-icons"
-import { RoadTestForm } from "./roadtestform"
-import { RoadTestCertForm } from "./roadtestcertform"
-
+import { FormRouterContext } from "./formroutercontext"
+import styled from "styled-components"
 
 const QualContainer = styled.div`
 display: flex;
 padding: 8px 0px;
 border-bottom: 1px dotted #B6B6B6;
 align-items:center;
-
 `
 const QualColumn1 = styled.div`
 width: 60px;
@@ -39,14 +31,13 @@ text-align: center;
 width: 250px;
 `
 export const QualificationsForm = () => {
-    const { globalState } = useGlobalContext()
-    const { driverRecord, setDriverRecord } = useContext(DriverContext)
+    const { openForm, closeForm } = useContext(FormRouterContext);
     const { qualifications } = useContext(QualificationsContext)
-    const [form, setForm] = useState(-1)
 
-    const handleFormCallback = (res) => {
-        setForm(-1)
-        res.status === 200 && setDriverRecord(res.data)
+    const setForm = (formId) => { openForm(formId, {}, formCallback) }
+
+    const formCallback = (resp) => {
+        closeForm()
     }
 
     const getDrivingInquiryStatus = () => {
@@ -71,7 +62,7 @@ export const QualificationsForm = () => {
     }
     const getRoadTestStatus = () => {
         let status = 0
-        if (qualifications.roadtest.status==1 || qualifications.dlcopy.status==1) status = 1
+        if (qualifications.roadtest.status == 1 || qualifications.dlcopy.status == 1) status = 1
         return status
     }
 
@@ -104,7 +95,7 @@ export const QualificationsForm = () => {
                 </QualColumn2>
                 <QualColumn3>{qualifications.application.text}</QualColumn3>
                 <QualColumn4>
-                    <FormButton style={{ width: "150px" }} onClick={() => setForm(0)}>View Details</FormButton>
+                    <FormButton style={{ width: "150px" }} onClick={() => setForm(13)}>View Details</FormButton>
                 </QualColumn4>
             </QualContainer>
             <QualContainer>
@@ -125,7 +116,7 @@ export const QualificationsForm = () => {
                 </QualColumn2>
                 <QualColumn3>{getDrivingInquiryStatus() === 0 ? "Incomplete" : "Complete For All Licenses"}</QualColumn3>
                 <QualColumn4>
-                    <FormButton style={{ width: "150px" }} onClick={() => setForm(1)}>View Details</FormButton>
+                    <FormButton style={{ width: "150px" }} onClick={() => setForm(14)}>View Details</FormButton>
                 </QualColumn4>
             </QualContainer>
             <QualContainer>
@@ -193,9 +184,5 @@ export const QualificationsForm = () => {
             </QualContainer>
 
         </div>
-        {form == 0 && <QualApplicationForm callback={handleFormCallback} />}
-        {form == 1 && <DriverInquiryForm callback={handleFormCallback} />}
-        {form == 2 && <GoodFaithForm callback={handleFormCallback} />}
-        {form == 3 && <RoadTestForm callback={handleFormCallback} />}        
     </>)
 }

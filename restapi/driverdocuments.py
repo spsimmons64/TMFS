@@ -25,13 +25,13 @@ class DriverDocuments(Resource):
         self.params = []
 
     def __update_driver_dates(self,driverid,typecode,licenseid="",filedate=None):                
-        dat_rec = Drivers().get_driver_dates(driverid,False)        
+        dat_rec = Drivers().get_driver_dates(driverid,False)                
         if dat_rec:
-            new_date = filedate if filedate else get_sql_date_time()
+            new_date = filedate if filedate else get_sql_date_time()                       
             match typecode:                
                 case "11": return Drivers().put_driver_date(driverid,"new",new_date)            
                 case "22":                     
-                    lic_rec = Database().fetch("driverlicenses",licenseid)
+                    lic_rec = Database().fetch("driverlicenses",licenseid)                    
                     if lic_rec:                        
                         lic_rec["inquirydate"] = filedate
                         if Database().update("driverlicenses",lic_rec): return True                            
@@ -42,24 +42,25 @@ class DriverDocuments(Resource):
                         lic_rec["mvrdate"] = filedate
                         if Database().update("driverlicenses",lic_rec): return True                            
                     return(False)      
-                case _: return True
+                case "_":                                         
+                    return True          
+            
         return False
     
     def __update_document_metadata(self,docid):                
-        met_rec = Database().prime("documentmeta")                
-        if met_rec:
-            met_rec["driverdocumentid"] = docid
-            met_rec.update(self.payload)
-            if self.payload["typecode"]  in ("20","33"):                
-                return Database().insert("documentmeta",met_rec)
-            else: 
-                return True
-        return False
+        if self.payload["typecode"]  in ("20","33"):                
+            met_rec = Database().prime("documentmeta")              
+            if met_rec:
+                met_rec.update(self.payload)            
+                met_rec["driverdocumentid"] = docid                
+                return Database().insert("documentmeta",met_rec)                
+        return True
 
     def __get_document_type(self,typecode):
         typ_set,typ_cnt = Database().query("SELECT * FROM documenttypes WHERE typecode=%s AND deleted IS NULL",(typecode))
         return typ_set[0] if typ_cnt else False
     
+
     def __process_files(self,record,filelist):
         typ_rec = self.__get_document_type(record["typecode"])
         complete=False      
@@ -81,8 +82,8 @@ class DriverDocuments(Resource):
                 for file in filelist: images.extend(file_to_image(file))
             else:
                 images = file_to_image(filelist[0])                              
-            outputpdf.generate_pdf_file(images,record["driverid"],f'{new_rec["recordid"]}.pdf',typ_rec["category"])             
-            complete = new_rec            
+            outputpdf.generate_pdf_file(images,record["driverid"],f'{new_rec["recordid"]}.pdf',typ_rec["category"])  
+            return(new_rec)
         return complete
     
     def upload_driver_document(self):
@@ -95,15 +96,15 @@ class DriverDocuments(Resource):
             "filedate": self.payload["filedate"]  if "filedate" in self.payload else get_sql_date_time(),
             "description": self.payload["description"] if "description" in self.payload else typ_rec["category"]
         }   
-        doc_rec = self.__process_files(file_rec,file_list)  
+        doc_rec = self.__process_files(file_rec,file_list)          
         if self.payload["typecode"] == "16":
             lic_rec = Drivers().upload_license(self.payload["driverid"],self.payload)
-            if lic_rec:
-                doc_rec["driverlicenseid"] = lic_rec["recordid"]
-                if(doc_rec and
-                   self.__update_driver_dates(self.payload["driverid"],typ_rec["typecode"],licenseid=file_rec["licenseid"],filedate=file_rec["filedate"]) and                 
-                   self.__update_document_metadata(doc_rec["recordid"])):
-                    return Drivers().fetch_formatted_driver(driverid=self.payload["driverid"],msg="Document Has Been Uploaded")
+            if lic_rec: lic_rec["driverlicenseid"] = lic_rec["recordid"]                        
+        print(doc_rec)  
+        if(doc_rec and
+            self.__update_driver_dates(self.payload["driverid"],typ_rec["typecode"],licenseid=file_rec["licenseid"],filedate=file_rec["filedate"]) and                             
+            self.__update_document_metadata(doc_rec["recordid"])):
+                return Drivers().fetch_formatted_driver(driverid=self.payload["driverid"],msg="Document Has Been Uploaded")
         return build_response(status=400,message="Unable To Create Document! Contact Support!")
     
     def upload_application_document(self):                
@@ -137,7 +138,7 @@ class DriverDocuments(Resource):
                 doc_rec["driverslicenseid"] = self.payload["licenseid"]
             if "position" in self.payload:
                 doc_rec["accountposition"] = self.payload["position"]
-            if "accountsignatureid" in self.payload:
+            if "esignatureid" in self.payload:
                 doc_rec["accountsignatureid"] = self.payload["esignatureid"]
             if "accountsignaturedate" in self.payload:                    
                 doc_rec["accountsignaturedate"] = self.payload["completedate"]

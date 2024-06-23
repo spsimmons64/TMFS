@@ -11,7 +11,7 @@ left:0;
 top:0;
 width:${props => props.toggle ? "100%" : "0px"};
 height:${props => props.toggle ? "100%" : "0px"};
-background-color: rgba(0,0,0,45%);
+background-color: rgba(0,0,0,55%);
 transition: all .5 ease;
 z-index: 9999;
 `

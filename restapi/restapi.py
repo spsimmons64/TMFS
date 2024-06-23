@@ -37,7 +37,6 @@ api = Api(app)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 api.add_resource(AppProfile, "/profile")
-
 api.add_resource(FetchNoCors, "/fetchobj/login",endpoint="fetch-login")
 api.add_resource(FetchNoCors, "/fetchobj/reseller",endpoint="fetch-reseller")
 api.add_resource(FetchNoCors, "/fetchobj/account",endpoint="fetch-account")

@@ -1,5 +1,6 @@
 import "./forms.css"
 import Preloader from "../../../assets/images/preloader_128.gif";
+import { Form } from "react-router-dom";
 
 
 export const ModalFormHeader = (props) => {
@@ -82,4 +83,29 @@ export const FormSection = (props) => {
             {children}
         </section>
     )
+}
+
+export const FormQualification = (props) => {
+    const { style, children, ...nprops } = props
+    return (<div {...nprops} className="form-qualification-section" style={style}>{children}</div>)
+}
+export const FormQualificationHeader = (props) => {
+    const { title, style, children, ...nprops } = props
+    return (<div {...nprops} className="form-qualification-section-header" style={style}>{title}</div>)
+}
+export const FormQualificationData = (props) => {
+    const { style, children, ...nprops } = props
+    return (<div {...nprops} className="form-qualification-section-data" style={style}>{children}</div>)
+}
+export const FormQualificationDataIcon = (props) => {
+    const { style, children, ...nprops } = props
+    return (<div {...nprops} className="form-qualification-section-data-icon" style={style}>{children}</div>)
+}
+export const FormQualificationDataIconLeft = (props) => {
+    const { style, children, ...nprops } = props
+    return (<div {...nprops} className="form-qualification-section-data-icon-left" style={style}>{children}</div>)
+}
+export const FormQualificationDataIconRight = (props) => {
+    const { style, children, ...nprops } = props
+    return (<div {...nprops} className="form-qualification-section-data-icon-right" style={style}>{children}</div>)
 }

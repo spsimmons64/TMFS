@@ -42,7 +42,7 @@ def print_image(pdf,image,y,maxwidth,maxheight):
     pdf.image(name=image_stream,x=Align.C,y=y)
 
 def print_signature(pdf,document):
-    esig_rec = Drivers().get_driver_esignature(document["driverid"])                    
+    esig_rec = Database().fetch("esignatures",document["accountsignatureid"])
     img = Image.open(BytesIO(base64.b64decode(esig_rec["esignature"])))
     image_array = BytesIO()
     img.save(image_array,format="PNG")           

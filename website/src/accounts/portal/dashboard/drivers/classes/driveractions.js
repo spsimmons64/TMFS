@@ -48,18 +48,18 @@ export const useDriverAction = () => {
 }
 
 export const DriverActionMenu = () => {
-    const { driverRecord,} = useContext(DriverContext)
+    const { driverRecord, } = useContext(DriverContext)
     const { openForm, closeForm } = useContext(FormRouterContext);
     const { isOpen, setActionClose } = useDriverAction()
     const validDriver = driverRecord.status === "New" || driverRecord.status === "Inactive"
     const forms = [
-        { formId: 0, text: "Send Workplace Policies", params: {}, hidden: false },
-        { formId: 1, text: "Send Memo", params:{}, hidden: validDriver },
-        { formId: 2, text: "Request License Upload",params:{route:"license"}, hidden: validDriver },
-        { formId: 2, text: "Request Medical Certificate Upload",params:{route:"medcard"}, hidden: validDriver },
-        { formId: 2, text: "Request Employement Correction",params:{route:"employment"}, hidden: validDriver },
-        { formId: 3, text: "Flag This Driver",params:{}, hidden: false }
-    ]    
+        { id: 0, formId: 0, text: "Send Workplace Policies", params: {}, hidden: false },
+        { id: 1, formId: 1, text: "Send Memo", params: {}, hidden: validDriver },
+        { id: 2, formId: 2, text: "Request License Upload", params: { route: "license" }, hidden: validDriver },
+        { id: 3, formId: 2, text: "Request Medical Certificate Upload", params: { route: "medcard" }, hidden: validDriver },
+        { id: 4, formId: 2, text: "Request Employement Correction", params: { route: "employment" }, hidden: validDriver },
+        { id: 5, formId: 3, text: "Flag This Driver", params: {}, hidden: false }
+    ]
     const divRef = useRef(null)
 
     const handleMouseDown = ({ target }) => {
@@ -68,8 +68,8 @@ export const DriverActionMenu = () => {
 
     const callForm = (id) => {
         setActionClose()
-        const item = forms.find(r=>r.formId === id)
-        if(item) openForm(item.formId,item.params,closeForm)        
+        const item = forms.find(r => r.id === id)
+        if (item) openForm(item.formId, item.params, closeForm)
     }
 
     useEffect(() => {
@@ -84,7 +84,7 @@ export const DriverActionMenu = () => {
                     const color = r.text === "Flag This Driver" ? "red" : "#164398"
                     return (<React.Fragment key={r.text}>
                         {!r.hidden
-                            ? <ActionMenuContainer onClick={()=>callForm(r.formId)}>
+                            ? <ActionMenuContainer onClick={() => callForm(r.id)}>
                                 <FontAwesomeIcon icon={faCaretRight} style={{ paddingRight: "5px" }} color={color} />
                                 <span style={{ color: color, textDecoration: "underline" }}>{r.text}</span>
                             </ActionMenuContainer>

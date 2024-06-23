@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react"
 import { useFormHook } from "../../global/hooks/formhook"
 import { DriverContext } from "../portal/dashboard/drivers/contexts/drivercontext"
-import { FormSection, ModalForm, ModalFormBody, ModalFormFooter, ModalFormHeader } from "../../components/global/forms/forms"
+import { FormQualification, FormQualificationData, FormQualificationHeader, FormSection, ModalForm, ModalFormBody, ModalFormFooter, ModalFormHeader } from "../../components/global/forms/forms"
 import { FormInput } from "../../components/portals/inputstyles"
 import { FormButton } from "../../components/portals/buttonstyle"
 import { FormTopLabel } from "../../components/portals/formstyles"
@@ -37,13 +37,15 @@ export const FlagDriverForm = ({ callback }) => {
     useEffect(() => { setValue("flagreason", "") }, [])
 
     return (
-        <ModalForm width="500px">
+        <ModalForm width="400px">
             <ModalFormHeader title="Flag This Driver" busy={formState.busy} />
             <ModalFormBody id={formState.id} busy={formState.busy}>
-                <FormSection style={{paddingTop:"0px"}}>
-                    You are about to flag this driver, please provide the reason.
+                <FormSection style={{paddingTop:"0px",marginBottom:"10px"}}>
+                    This action allows you to place a flag on driver <strong>{driverRecord.firstname} {driverRecord.lastname}.</strong>                    
                 </FormSection>
-                <FormSection style={{borderBottom:"none"}}>
+                <FormQualification style={{marginBottom:"0px"}}>
+                    <FormQualificationHeader title="Flag Driver" />
+                    <FormQualificationData style={{padding:"10px"}}>
                     <FormTopLabel>Flag Reason</FormTopLabel>
                     <FormInput
                         id="flagreason"
@@ -53,7 +55,8 @@ export const FlagDriverForm = ({ callback }) => {
                         onChange={handleChange}
                         autoFocus
                     />
-                </FormSection>
+                    </FormQualificationData>
+                </FormQualification>
             </ModalFormBody>
             <ModalFormFooter style={{ justifyContent: "flex-end" }}>
                 <div><FormButton style={{ width: "100px" }} onClick={handleSubmit}>Flag Driver</FormButton></div>

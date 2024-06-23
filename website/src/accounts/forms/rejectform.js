@@ -4,10 +4,10 @@ import { FormTopLabel } from "../../components/portals/formstyles"
 import { FormButton } from "../../components/portals/buttonstyle"
 import { useFormHook } from "../../global/hooks/formhook"
 import { FormText } from "../../components/portals/inputstyles"
-import { FormSection, ModalForm, ModalFormBody, ModalFormFooter, ModalFormHeader } from "../../components/global/forms/forms"
+import { FormQualification, FormQualificationData, FormQualificationHeader, FormSection, ModalForm, ModalFormBody, ModalFormFooter, ModalFormHeader } from "../../components/global/forms/forms"
 
 export const RejectForm = ({ record, callback }) => {
-    const { driverRecord,setDriverRecord } = useContext(DriverContext)
+    const { driverRecord, setDriverRecord } = useContext(DriverContext)
     const { sendFormData, setValue, getValue, getError, handleChange, formState } = useFormHook("discard-form")
 
     const handleSubmit = async () => {
@@ -28,20 +28,23 @@ export const RejectForm = ({ record, callback }) => {
         <ModalForm width="680px">
             <ModalFormHeader title="Send Correction Request" busy={formState.busy} />
             <ModalFormBody id={formState.id} busy={formState.busy}>
-                <FormSection style={{ paddingTop: "0px" }}>
+                <FormSection style={{ paddingTop: "0px", marginBottom: "10px" }}>
                     You are sending this application back to the Driver for corrections. Please provide the correction instructions below. The
                     driver be notified by email and they will have the opportunity to adjust their application and resubmit.
                 </FormSection>
-                <FormSection style={{ borderBottom: "none", paddingBottom: "0px" }}>
-                    <FormTopLabel>Correction Reason</FormTopLabel>
-                    <FormText
-                        id="rejectreason"
-                        value={getValue("rejectreason")}
-                        onChange={handleChange}
-                        height="100px"
-                        autoFocus
-                    />
-                </FormSection>
+                <FormQualification style={{ marginBottom: "0px" }}>
+                    <FormQualificationHeader title="Send For Corrections" />
+                    <FormQualificationData style={{ padding: "10px 10px 0px 10px" }}>
+                        <FormTopLabel>Correction Reason</FormTopLabel>
+                        <FormText
+                            id="rejectreason"
+                            value={getValue("rejectreason")}
+                            onChange={handleChange}
+                            height="110px"
+                            autoFocus
+                        />
+                    </FormQualificationData>
+                </FormQualification>
             </ModalFormBody>
             <ModalFormFooter style={{ justifyContent: "flex-end" }}>
                 <div><FormButton style={{ width: "100px" }} onClick={handleSubmit}>Confirm</FormButton></div>

@@ -463,7 +463,6 @@ class PDF(FPDF):
                 self.setShadedFill()
                 self.cell(w=7,h=.35,text="Were You Subject To The DOT/FMCSA Regulations While Employed By This Employer?",border=1, fill=1)
                 self.setStandardFill()
-
                 self.cell(w=1,h=.35,text="YES" if emp_rec["dotfmcsregs"]=="Y" else "NO",border=1, fill=1,ln=1)
                 self.setShadedFill()
                 hold_y = self.get_y()                
